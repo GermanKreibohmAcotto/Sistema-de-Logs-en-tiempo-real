@@ -1,0 +1,84 @@
+name: logs-realtime-platform
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: logs
+      POSTGRES_PASSWORD: logs
+      POSTGRES_DB: logs
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U logs -d logs']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      HOST: 0.0.0.0
+      DATABASE_URL: postgres://logs:logs@postgres:5432/logs
+      REDIS_URL: redis://redis:6379
+      CORS_ORIGIN: http://localhost:8080
+    ports:
+      - '4000:4000'
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://localhost:4000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - '8080:80'
+
+  loadgen:
+    build:
+      context: .
+      dockerfile: apps/loadgen/Dockerfile
+    profiles: ['load']
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      LOADGEN_TARGET_URL: http://api:4000
+    command: ['--rate', '500', '--duration', '60']
+
+volumes:
+  postgres-data:
+  redis-data:

@@ -1,0 +1,38 @@
+{
+  "name": "logs-realtime-platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Plataforma de monitoreo y gestion de logs en tiempo real",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev -w @logs/api",
+    "dev:web": "npm run dev -w @logs/web",
+    "build": "npm run build -w @logs/shared && npm run build -w @logs/api && npm run build -w @logs/web && npm run build -w @logs/loadgen",
+    "db:migrate": "npm run db:migrate -w @logs/api",
+    "keys:create": "npm run keys:create -w @logs/api",
+    "load": "npm run start -w @logs/loadgen --",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.20.0",
+    "@types/node": "^22.10.0",
+    "eslint": "^9.20.0",
+    "eslint-config-prettier": "^9.1.0",
+    "jsdom": "^27.0.1",
+    "prettier": "^3.4.2",
+    "tsx": "^4.23.0",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.20.0",
+    "vitest": "^4.1.10"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
