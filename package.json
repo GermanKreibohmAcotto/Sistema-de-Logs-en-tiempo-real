@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "description": "Plataforma de monitoreo y gestion de logs en tiempo real",
+  "license": "MIT",
   "workspaces": [
     "packages/*",
     "apps/*"
