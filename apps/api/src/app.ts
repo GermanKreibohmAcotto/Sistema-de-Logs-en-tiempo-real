@@ -11,6 +11,7 @@ import { exportRoutes } from './routes/export.js';
 import { alertsRoutes } from './routes/alerts.js';
 import { registerWebSocketGateway } from './realtime/gateway.js';
 import { startLogSubscriber } from './realtime/subscriber.js';
+import { requireDashboardToken } from './plugins/dashboard-auth.js';
 
 export async function buildApp() {
   const app = Fastify({
@@ -29,10 +30,19 @@ export async function buildApp() {
 
   await app.register(healthRoutes);
   await app.register(ingestRoutes);
-  await app.register(queryRoutes);
-  await app.register(statsRoutes);
+  // Ticket-gated instead of header-gated - see routes/export.ts.
   await app.register(exportRoutes);
-  await app.register(alertsRoutes);
+
+  // Dashboard reads share one guard instead of repeating a preHandler on
+  // each route: registering inside a nested plugin gives Fastify's
+  // encapsulation a scope to hang the hook on without touching ingest,
+  // export or health.
+  await app.register(async (dashboardReads) => {
+    dashboardReads.addHook('preHandler', requireDashboardToken);
+    await dashboardReads.register(queryRoutes);
+    await dashboardReads.register(statsRoutes);
+    await dashboardReads.register(alertsRoutes);
+  });
 
   registerWebSocketGateway(app);
   // The gateway only fans out events it receives from this subscription

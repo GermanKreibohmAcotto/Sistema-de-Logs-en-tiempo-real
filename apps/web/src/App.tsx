@@ -10,6 +10,8 @@ import { RateChart } from './components/RateChart';
 import { AlertsPanel } from './components/AlertsPanel';
 import { ExportButton } from './components/ExportButton';
 import { ConnectionBanner } from './components/ConnectionBanner';
+import { TokenGate } from './components/TokenGate';
+import { clearDashboardToken, getDashboardToken } from './lib/dashboard-token';
 
 /**
  * `new WebSocket(url)` requires an absolute ws(s):// URL - unlike fetch, a
@@ -34,6 +36,7 @@ function toIsoOrUndefined(datetimeLocalValue: string): string | undefined {
 }
 
 export default function App() {
+  const [hasToken, setHasToken] = useState(() => Boolean(getDashboardToken()));
   const storeRef = useRef(new LogStore());
   const wsClientRef = useRef(new WsClient(WS_URL));
 
@@ -48,6 +51,7 @@ export default function App() {
   const [buckets, setBuckets] = useState<StatsBucket[]>([]);
 
   useEffect(() => {
+    if (!hasToken) return;
     const wsClient = wsClientRef.current;
     const store = storeRef.current;
     wsClient.connect();
@@ -55,14 +59,19 @@ export default function App() {
     const offLogs = wsClient.onLogs((items) => store.push(items));
     const offDropped = wsClient.onDropped((count) => store.recordServerDropped(count));
     const offStats = wsClient.onStats(setBuckets);
+    const offAuthError = wsClient.onAuthError(() => {
+      clearDashboardToken();
+      setHasToken(false);
+    });
     return () => {
       offStatus();
       offLogs();
       offDropped();
       offStats();
+      offAuthError();
       wsClient.close();
     };
-  }, []);
+  }, [hasToken]);
 
   // Debounce search text so keystrokes don't each trigger a WS re-subscribe
   // or a historical refetch.
@@ -124,6 +133,10 @@ export default function App() {
     setFrom('');
     setTo('');
     setMode('live');
+  }
+
+  if (!hasToken) {
+    return <TokenGate onSubmit={() => setHasToken(true)} />;
   }
 
   return (

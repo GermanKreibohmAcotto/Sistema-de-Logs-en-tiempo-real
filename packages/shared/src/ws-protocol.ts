@@ -7,6 +7,9 @@ import { statsBucketSchema } from './stats.js';
 // ---- Client -> Server ----
 
 export const clientMessageSchema = z.discriminatedUnion('type', [
+  // Browsers can't set headers on `new WebSocket()`, so the dashboard token
+  // travels as the first frame instead of a header or query param.
+  z.object({ type: z.literal('auth'), token: z.string() }),
   z.object({ type: z.literal('subscribe'), filters: logQuerySchema.default({}) }),
   z.object({ type: z.literal('pause') }),
   z.object({ type: z.literal('resume') }),

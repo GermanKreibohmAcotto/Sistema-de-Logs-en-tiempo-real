@@ -14,6 +14,9 @@ import { config } from '../config.js';
 import { logger } from '../logger.js';
 import { matchesFilter } from './matcher.js';
 import { onLogBatch } from './subscriber.js';
+import { isDashboardTokenValid } from '../plugins/dashboard-auth.js';
+
+const AUTH_TIMEOUT_MS = 5000;
 
 interface ClientState {
   id: string;
@@ -139,8 +142,22 @@ export function registerWebSocketGateway(app: FastifyInstance): void {
       droppedSinceLastFrame: 0,
       isAlive: true,
     };
-    clients.set(id, client);
-    logger.info({ clientId: id, total: clients.size }, 'Cliente WS conectado');
+    // DASHBOARD_TOKEN unset => open/dev mode, activate immediately as before.
+    // Otherwise the socket stays out of `clients` (no fan-out, no batching)
+    // until a valid `auth` frame arrives.
+    let authenticated = !config.DASHBOARD_TOKEN;
+    let authTimer: ReturnType<typeof setTimeout> | null = null;
+
+    function activate(): void {
+      clients.set(id, client);
+      logger.info({ clientId: id, total: clients.size }, 'Cliente WS conectado');
+    }
+
+    if (authenticated) {
+      activate();
+    } else {
+      authTimer = setTimeout(() => socket.close(4401, 'auth_timeout'), AUTH_TIMEOUT_MS);
+    }
 
     socket.on('pong', () => {
       client.isAlive = true;
@@ -154,7 +171,23 @@ export function registerWebSocketGateway(app: FastifyInstance): void {
         return; // frame malformado: se ignora, no se tumba la conexion
       }
 
+      if (!authenticated) {
+        if (parsed.type === 'auth') {
+          if (isDashboardTokenValid(parsed.token)) {
+            authenticated = true;
+            if (authTimer) clearTimeout(authTimer);
+            activate();
+          } else {
+            socket.close(4401, 'invalid_token');
+          }
+        }
+        return; // cualquier otro frame antes de autenticar se ignora
+      }
+
       switch (parsed.type) {
+        case 'auth': {
+          break; // ya autenticado, frame redundante
+        }
         case 'subscribe': {
           client.filters = logQuerySchema.parse(parsed.filters ?? {});
           send(socket, { type: 'subscribed', filters: client.filters });
@@ -179,6 +212,7 @@ export function registerWebSocketGateway(app: FastifyInstance): void {
     });
 
     socket.on('close', () => {
+      if (authTimer) clearTimeout(authTimer);
       clients.delete(id);
       logger.info({ clientId: id, total: clients.size }, 'Cliente WS desconectado');
     });

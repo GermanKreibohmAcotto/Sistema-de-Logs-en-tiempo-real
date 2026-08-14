@@ -9,6 +9,12 @@ import { startStatsBroadcaster } from './realtime/stats-broadcaster.js';
 import { startRulesCacheRefresh } from './alerts/rules-cache.js';
 
 async function main(): Promise<void> {
+  if (!config.DASHBOARD_TOKEN && config.NODE_ENV === 'production') {
+    logger.warn(
+      'DASHBOARD_TOKEN no esta configurado: las lecturas del dashboard (logs, stats, alertas, export, WS) quedan sin autenticacion. Configuralo antes de exponer esta API fuera de tu red local.',
+    );
+  }
+
   const app = await buildApp(); // also starts the Redis log subscriber the WS gateway needs
   const stopPartitionMaintenance = schedulePartitionMaintenance();
   const stopStatsBroadcaster = startStatsBroadcaster();

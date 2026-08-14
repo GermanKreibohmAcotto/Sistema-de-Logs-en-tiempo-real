@@ -8,6 +8,8 @@ import { rowToLogEvent, type LogRow } from '../db/row-mapping.js';
 import { config } from '../config.js';
 import { logger } from '../logger.js';
 import { csvEscape } from '../export/csv.js';
+import { createExportTicket, consumeExportTicket } from '../export/tickets.js';
+import { requireDashboardToken } from '../plugins/dashboard-auth.js';
 
 function contentTypeFor(format: ExportFormat): string {
   if (format === 'csv') return 'text/csv; charset=utf-8';
@@ -28,7 +30,21 @@ function extensionFor(format: ExportFormat): string {
  * filtered result is 500 rows or EXPORT_MAX_ROWS.
  */
 export const exportRoutes: FastifyPluginAsync = async (fastify) => {
+  // Reachable only via the ticket below, not the x-dashboard-token header - a
+  // browser navigation can't set headers, so this is issued via a proper
+  // fetch() first, where the header still applies normally.
+  fastify.post('/v1/logs/export/ticket', { preHandler: requireDashboardToken }, async () => {
+    return { ticket: await createExportTicket() };
+  });
+
   fastify.get('/v1/logs/export', async (request, reply) => {
+    if (config.DASHBOARD_TOKEN) {
+      const { ticket } = request.query as { ticket?: string };
+      if (!(await consumeExportTicket(ticket))) {
+        return reply.code(401).send({ error: 'invalid_or_expired_ticket' });
+      }
+    }
+
     const parsed = exportQuerySchema.safeParse(request.query);
     if (!parsed.success) {
       return reply.code(400).send({ error: 'invalid_query', details: parsed.error.flatten() });

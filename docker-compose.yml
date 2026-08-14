@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: logs
-      POSTGRES_PASSWORD: logs
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-logs}
       POSTGRES_DB: logs
     ports:
       - '5432:5432'
@@ -45,9 +45,10 @@ services:
       NODE_ENV: production
       PORT: 4000
       HOST: 0.0.0.0
-      DATABASE_URL: postgres://logs:logs@postgres:5432/logs
+      DATABASE_URL: postgres://logs:${POSTGRES_PASSWORD:-logs}@postgres:5432/logs
       REDIS_URL: redis://redis:6379
       CORS_ORIGIN: http://localhost:8080
+      DASHBOARD_TOKEN: ${DASHBOARD_TOKEN:-}
     ports:
       - '4000:4000'
     healthcheck:

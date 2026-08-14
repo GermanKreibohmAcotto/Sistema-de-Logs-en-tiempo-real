@@ -1,12 +1,25 @@
 import type { Alert, AlertRule, AlertRuleInput, LogEvent, LogLevel, StatsBucket } from '@logs/shared';
+import { clearDashboardToken, getDashboardToken } from './dashboard-token';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:4000';
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = getDashboardToken();
   const res = await fetch(`${BASE_URL}${path}`, {
     ...init,
-    headers: { 'Content-Type': 'application/json', ...(init?.headers ?? {}) },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { 'x-dashboard-token': token } : {}),
+      ...(init?.headers ?? {}),
+    },
   });
+  if (res.status === 401) {
+    // Token missing/wrong/rotated: drop it and reload so the token gate
+    // reappears instead of the app limping along with broken requests.
+    clearDashboardToken();
+    window.location.reload();
+    throw new Error('unauthorized');
+  }
   if (!res.ok) {
     const text = await res.text().catch(() => '');
     throw new Error(`${res.status} ${res.statusText}${text ? `: ${text}` : ''}`);
@@ -76,4 +89,9 @@ export async function deleteAlertRule(id: string): Promise<void> {
 /** Not fetched via `request` - this is meant to be assigned to an <a href>/window.location so the browser handles the download/streaming response itself. */
 export function exportUrl(params: LogFilterParams & { format: 'csv' | 'json' | 'ndjson' }): string {
   return `${BASE_URL}/v1/logs/export${buildQueryString(params)}`;
+}
+
+/** Mints a one-time export ticket over a real fetch() (header auth still works) for the navigation-only download to carry instead. */
+export async function requestExportTicket(): Promise<{ ticket: string }> {
+  return request('/v1/logs/export/ticket', { method: 'POST' });
 }

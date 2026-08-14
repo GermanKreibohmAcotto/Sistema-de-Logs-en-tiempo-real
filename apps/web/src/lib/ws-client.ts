@@ -1,6 +1,9 @@
 import { serverMessageSchema, type Alert, type ClientMessage, type LogEvent, type LogQuery, type StatsBucket } from '@logs/shared';
+import { getDashboardToken } from './dashboard-token';
 
 export type ConnectionStatus = 'connecting' | 'connected' | 'reconnecting' | 'disconnected';
+
+const AUTH_REJECTED_CLOSE_CODE = 4401;
 
 type LogsHandler = (items: LogEvent[]) => void;
 type DroppedHandler = (count: number) => void;
@@ -8,6 +11,7 @@ type AlertHandler = (alert: Alert) => void;
 type StatsHandler = (buckets: StatsBucket[]) => void;
 type PausedHandler = (missed: number) => void;
 type StatusHandler = (status: ConnectionStatus) => void;
+type AuthErrorHandler = () => void;
 
 const MAX_BACKOFF_MS = 30_000;
 
@@ -29,6 +33,7 @@ export class WsClient {
   private statsHandlers = new Set<StatsHandler>();
   private pausedHandlers = new Set<PausedHandler>();
   private statusHandlers = new Set<StatusHandler>();
+  private authErrorHandlers = new Set<AuthErrorHandler>();
 
   constructor(private readonly url: string) {}
 
@@ -87,6 +92,11 @@ export class WsClient {
     return () => this.statusHandlers.delete(handler);
   }
 
+  onAuthError(handler: AuthErrorHandler): () => void {
+    this.authErrorHandlers.add(handler);
+    return () => this.authErrorHandlers.delete(handler);
+  }
+
   private open(): void {
     this.setStatus(this.reconnectAttempt === 0 ? 'connecting' : 'reconnecting');
 
@@ -96,6 +106,8 @@ export class WsClient {
     socket.addEventListener('open', () => {
       this.reconnectAttempt = 0;
       this.setStatus('connected');
+      const token = getDashboardToken();
+      if (token) this.send({ type: 'auth', token });
       this.send({ type: 'subscribe', filters: this.currentFilters });
     });
 
@@ -128,8 +140,13 @@ export class WsClient {
       }
     });
 
-    socket.addEventListener('close', () => {
+    socket.addEventListener('close', (event) => {
       if (this.manuallyClosed) return;
+      if (event.code === AUTH_REJECTED_CLOSE_CODE) {
+        // Bad/missing token: reconnecting would just repeat the rejection.
+        for (const handler of this.authErrorHandlers) handler();
+        return;
+      }
       this.setStatus('disconnected');
       this.scheduleReconnect();
     });
