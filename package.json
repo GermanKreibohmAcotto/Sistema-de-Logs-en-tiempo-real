@@ -11,7 +11,7 @@
   "scripts": {
     "dev:api": "npm run dev -w @logs/api",
     "dev:web": "npm run dev -w @logs/web",
-    "build": "npm run build -w @logs/shared && npm run build -w @logs/api && npm run build -w @logs/web && npm run build -w @logs/loadgen",
+    "build": "npm run build -w @logs/shared && npm run build -w @logs/client && npm run build -w @logs/api && npm run build -w @logs/web && npm run build -w @logs/loadgen",
     "db:migrate": "npm run db:migrate -w @logs/api",
     "keys:create": "npm run keys:create -w @logs/api",
     "load": "npm run start -w @logs/loadgen --",
