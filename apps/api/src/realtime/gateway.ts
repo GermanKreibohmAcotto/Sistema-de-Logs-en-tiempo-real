@@ -37,11 +37,13 @@ function send(socket: WebSocket, message: ServerMessage): void {
 }
 
 function enqueue(client: ClientState, event: LogEvent): void {
+  // Filter first: an event the client was never subscribed to shouldn't
+  // inflate "missed" just because it also happened to be paused.
+  if (!matchesFilter(event, client.filters)) return;
   if (client.paused) {
     client.missedWhilePaused++;
     return;
   }
-  if (!matchesFilter(event, client.filters)) return;
 
   client.queue.push(event);
   if (client.queue.length > config.WS_CLIENT_QUEUE_MAX) {

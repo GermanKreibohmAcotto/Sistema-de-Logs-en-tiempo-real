@@ -8,7 +8,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {
     ...init,
     headers: {
-      'Content-Type': 'application/json',
+      // Only claim JSON when there's actually a body - Fastify's JSON body
+      // parser 400s on an empty body declared as application/json, which is
+      // exactly what a bodyless DELETE was sending before this guard.
+      ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
       ...(token ? { 'x-dashboard-token': token } : {}),
       ...(init?.headers ?? {}),
     },
