@@ -2,9 +2,9 @@ import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { LogStore } from '../lib/log-store';
 import type { WsClient } from '../lib/ws-client';
+import { COLUMN_CLASSES, ROW_HEIGHT, ROW_HEIGHT_CLASS } from '../lib/row-metrics';
 import { LogRow } from './LogRow';
 
-const ROW_HEIGHT = 28;
 const BOTTOM_ANCHOR_THRESHOLD_PX = 48;
 
 /**
@@ -75,37 +75,51 @@ export function LogConsole({ store, wsClient }: { store: LogStore; wsClient: WsC
   const newSinceUnpin = unpinnedAtLength === null ? 0 : Math.max(0, items.length - unpinnedAtLength);
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between gap-3 border-b border-slate-800 px-3 py-2 text-xs text-slate-400">
+    <div className="flex h-full flex-col overflow-hidden rounded-xl border border-outline-variant/40 bg-surface-lowest">
+      {/* Fixed height so no degraded state (paused, dropped, detached) ever shifts the viewport. */}
+      <div className="flex h-10 shrink-0 items-center justify-between gap-3 border-b border-outline-variant/40 px-3 text-xs text-on-surface-variant">
         <div className="flex items-center gap-3">
           <button
+            type="button"
             onClick={togglePause}
-            className={`rounded px-2 py-1 text-xs font-semibold ${
-              paused ? 'bg-amber-700 text-amber-50' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'
+            className={`rounded-md px-2 py-1 text-[11px] font-semibold ${
+              paused
+                ? 'bg-tertiary-container text-on-tertiary-container'
+                : 'bg-surface-container text-on-surface-variant hover:bg-surface-high'
             }`}
           >
             {paused ? `Reanudar${missed ? ` (${missed} perdidos)` : ''}` : 'Pausar'}
           </button>
           <span>{items.length.toLocaleString('es-AR')} en buffer</span>
           {store.droppedCount > 0 && (
-            <span className="text-amber-400">
+            <span className="text-tertiary">
               {store.droppedCount.toLocaleString('es-AR')} descartados por saturacion
             </span>
           )}
         </div>
         {!pinnedToBottom && (
           <button
+            type="button"
             onClick={jumpToBottom}
-            className="rounded bg-sky-800 px-2 py-1 font-semibold text-sky-50 hover:bg-sky-700"
+            className="rounded-md bg-primary-container px-2 py-1 text-[11px] font-semibold text-on-primary hover:bg-primary"
           >
             Ir al final{newSinceUnpin > 0 ? ` (${newSinceUnpin} nuevos)` : ''}
           </button>
         )}
       </div>
 
-      <div ref={parentRef} onScroll={handleScroll} className="flex-1 overflow-y-auto">
+      <div
+        className={`flex shrink-0 items-center gap-3 border-b border-outline-variant/40 px-3 text-[10px] font-semibold uppercase tracking-wide text-on-surface-variant/60 ${ROW_HEIGHT_CLASS}`}
+      >
+        <span className={COLUMN_CLASSES.time}>Hora</span>
+        <span className={COLUMN_CLASSES.level}>Nivel</span>
+        <span className={COLUMN_CLASSES.service}>Servicio</span>
+        <span className={COLUMN_CLASSES.message}>Mensaje</span>
+      </div>
+
+      <div ref={parentRef} onScroll={handleScroll} data-testid="log-viewport" className="flex-1 overflow-y-auto">
         {items.length === 0 ? (
-          <p className="p-4 text-sm text-slate-500">Esperando logs...</p>
+          <p className="p-4 text-sm text-on-surface-variant/60">Esperando logs...</p>
         ) : (
           <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
             {virtualizer.getVirtualItems().map((virtualRow) => {
@@ -114,6 +128,8 @@ export function LogConsole({ store, wsClient }: { store: LogStore; wsClient: WsC
               return (
                 <div
                   key={event.id}
+                  data-testid="log-row"
+                  className={ROW_HEIGHT_CLASS}
                   style={{
                     position: 'absolute',
                     top: 0,

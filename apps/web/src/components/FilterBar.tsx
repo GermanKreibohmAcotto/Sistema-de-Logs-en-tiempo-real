@@ -18,7 +18,8 @@ export interface FilterBarProps {
  * Same filter shape drives both view modes: in Live it debounces into a WS
  * `subscribe`, in Historical it drives GET /v1/logs. Setting a from/to date
  * flips the parent to Historical mode (see App.tsx) - filtering "yesterday"
- * on a live stream is not a coherent action.
+ * on a live stream is not a coherent action. Five level chips only - an
+ * empty `levels` array already means all-active, so there is no "All" chip.
  */
 export function FilterBar(props: FilterBarProps) {
   function toggleLevel(level: LogLevel): void {
@@ -30,15 +31,16 @@ export function FilterBar(props: FilterBarProps) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-3 border-b border-slate-800 bg-slate-900 px-4 py-3">
+    <div className="flex flex-wrap items-center gap-3 border-b border-outline-variant/40 bg-surface-low px-4 py-2.5">
       <div className="flex gap-1.5">
         {LOG_LEVELS.map((level) => {
           const active = props.levels.length === 0 || props.levels.includes(level);
           return (
             <button
               key={level}
+              type="button"
               onClick={() => toggleLevel(level)}
-              className={`rounded px-2 py-1 text-[10px] font-semibold transition-opacity ${LEVEL_CHIP_CLASSES[level]} ${
+              className={`rounded-md px-2.5 py-1 text-[10px] font-semibold ${LEVEL_CHIP_CLASSES[level]} ${
                 active ? 'opacity-100' : 'opacity-30'
               }`}
             >
@@ -52,33 +54,33 @@ export function FilterBar(props: FilterBarProps) {
         value={props.services}
         onChange={(e) => props.onServicesChange(e.target.value)}
         placeholder="servicios (coma separados)"
-        className="w-48 rounded border border-slate-700 bg-slate-950 px-2 py-1 text-xs text-slate-100 placeholder:text-slate-600"
+        className="w-48 rounded-md border border-outline-variant/40 bg-surface-highest px-2.5 py-1.5 text-xs text-on-surface placeholder:text-on-surface-variant/60"
       />
 
       <input
         value={props.q}
         onChange={(e) => props.onQChange(e.target.value)}
         placeholder="buscar en el mensaje..."
-        className="min-w-48 flex-1 rounded border border-slate-700 bg-slate-950 px-2 py-1 text-xs text-slate-100 placeholder:text-slate-600"
+        className="min-w-48 flex-1 rounded-md border border-outline-variant/40 bg-surface-highest px-2.5 py-1.5 text-xs text-on-surface placeholder:text-on-surface-variant/60"
       />
 
-      <div className="flex items-center gap-1.5 text-xs text-slate-400">
-        <label>
-          Desde{' '}
+      <div className="flex items-center gap-1.5 text-xs text-on-surface-variant">
+        <label className="flex items-center gap-1">
+          Desde
           <input
             type="datetime-local"
             value={props.from}
             onChange={(e) => props.onFromChange(e.target.value)}
-            className="rounded border border-slate-700 bg-slate-950 px-1.5 py-1 text-slate-100"
+            className="rounded-md border border-outline-variant/40 bg-surface-highest px-1.5 py-1 text-on-surface"
           />
         </label>
-        <label>
-          Hasta{' '}
+        <label className="flex items-center gap-1">
+          Hasta
           <input
             type="datetime-local"
             value={props.to}
             onChange={(e) => props.onToChange(e.target.value)}
-            className="rounded border border-slate-700 bg-slate-950 px-1.5 py-1 text-slate-100"
+            className="rounded-md border border-outline-variant/40 bg-surface-highest px-1.5 py-1 text-on-surface"
           />
         </label>
       </div>

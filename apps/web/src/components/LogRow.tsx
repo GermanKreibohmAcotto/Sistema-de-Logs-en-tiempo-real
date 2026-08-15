@@ -1,6 +1,15 @@
 import type { LogEvent } from '@logs/shared';
-import { LEVEL_TEXT_CLASSES } from '../lib/level-styles';
+import { LEVEL_ACCENT_CLASSES, LEVEL_ROW_CLASSES, LEVEL_TEXT_CLASSES } from '../lib/level-styles';
+import { COLUMN_CLASSES } from '../lib/row-metrics';
 
+/**
+ * `h-full` + `overflow-hidden` + no vertical padding keeps the rendered
+ * height exactly equal to the wrapper's inline `style.height` (28px), which
+ * in turn equals the virtualizer's `estimateSize()` - see `row-metrics.ts`.
+ * The accent bar is absolutely positioned over the left edge instead of
+ * taking flex space, so column widths stay identical to the header row
+ * whether or not a given level renders one.
+ */
 export function LogRow({ event }: { event: LogEvent }) {
   const time = new Date(event.timestamp).toLocaleTimeString('es-AR', {
     hour12: false,
@@ -8,19 +17,23 @@ export function LogRow({ event }: { event: LogEvent }) {
     minute: '2-digit',
     second: '2-digit',
   });
+  const accent = LEVEL_ACCENT_CLASSES[event.level];
 
   return (
-    <div className="flex h-full items-center gap-3 border-b border-slate-800/60 px-3 font-mono text-xs">
-      <span className="w-20 shrink-0 text-slate-500">{time}</span>
+    <div
+      className={`relative flex h-full items-center gap-3 overflow-hidden border-b border-outline-variant/20 px-3 font-mono text-xs ${LEVEL_ROW_CLASSES[event.level]}`}
+    >
+      {accent && <span className={`absolute inset-y-0 left-0 w-0.5 ${accent}`} />}
+      <span className={`${COLUMN_CLASSES.time} text-on-surface-variant/70`}>{time}</span>
       <span
-        className={`w-14 shrink-0 rounded px-1.5 py-0.5 text-center font-sans text-[10px] font-semibold ${LEVEL_TEXT_CLASSES[event.level]}`}
+        className={`${COLUMN_CLASSES.level} truncate text-center font-sans text-[10px] font-semibold ${LEVEL_TEXT_CLASSES[event.level]}`}
       >
         {event.level}
       </span>
-      <span className="w-32 shrink-0 truncate font-sans text-slate-400" title={event.service}>
+      <span className={`${COLUMN_CLASSES.service} truncate font-sans text-on-surface-variant`} title={event.service}>
         {event.service}
       </span>
-      <span className="min-w-0 flex-1 truncate text-slate-100" title={event.message}>
+      <span className={`${COLUMN_CLASSES.message} truncate text-on-surface`} title={event.message}>
         {event.message}
       </span>
     </div>

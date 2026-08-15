@@ -2,9 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { LogEvent } from '@logs/shared';
 import { fetchLogs, type LogFilterParams } from '../lib/api';
+import { COLUMN_CLASSES, ROW_HEIGHT, ROW_HEIGHT_CLASS } from '../lib/row-metrics';
 import { LogRow } from './LogRow';
 
-const ROW_HEIGHT = 28;
 const PAGE_SIZE = 100;
 
 /**
@@ -86,16 +86,26 @@ export function HistoricalLogList({ filters }: { filters: LogFilterParams }) {
   });
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex items-center gap-3 border-b border-slate-800 px-3 py-2 text-xs text-slate-400">
+    <div className="flex h-full flex-col overflow-hidden rounded-xl border border-outline-variant/40 bg-surface-lowest">
+      <div className="flex h-10 shrink-0 items-center gap-3 border-b border-outline-variant/40 px-3 text-xs text-on-surface-variant">
         <span>
           {items.length.toLocaleString('es-AR')} resultados{exhausted ? ' (fin)' : ''}
         </span>
-        {error && <span className="text-red-400">Error: {error}</span>}
+        {error && <span className="text-error">Error: {error}</span>}
       </div>
+
+      <div
+        className={`flex shrink-0 items-center gap-3 border-b border-outline-variant/40 px-3 text-[10px] font-semibold uppercase tracking-wide text-on-surface-variant/60 ${ROW_HEIGHT_CLASS}`}
+      >
+        <span className={COLUMN_CLASSES.time}>Hora</span>
+        <span className={COLUMN_CLASSES.level}>Nivel</span>
+        <span className={COLUMN_CLASSES.service}>Servicio</span>
+        <span className={COLUMN_CLASSES.message}>Mensaje</span>
+      </div>
+
       <div ref={parentRef} className="flex-1 overflow-y-auto">
         {items.length === 0 && !loading ? (
-          <p className="p-4 text-sm text-slate-500">Sin resultados para estos filtros.</p>
+          <p className="p-4 text-sm text-on-surface-variant/60">Sin resultados para estos filtros.</p>
         ) : (
           <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
             {virtualizer.getVirtualItems().map((virtualRow) => {
@@ -120,7 +130,7 @@ export function HistoricalLogList({ filters }: { filters: LogFilterParams }) {
           </div>
         )}
         <div ref={sentinelRef} className="h-4" />
-        {loading && <p className="p-3 text-center text-xs text-slate-500">Cargando...</p>}
+        {loading && <p className="p-3 text-center text-xs text-on-surface-variant/60">Cargando...</p>}
       </div>
     </div>
   );

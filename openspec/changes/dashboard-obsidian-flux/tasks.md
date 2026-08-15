@@ -49,16 +49,16 @@ Per-slice risk: PR1 Medium (icons.tsx + Sidebar + App shell + 3 test files bundl
 
 ## Phase 2: Stream Surfaces (PR 2)
 
-- [ ] 2.1 Create `apps/web/test/helpers/dom-layout.ts`: stub `Element.prototype.getBoundingClientRect`, define `clientHeight`/`scrollHeight`, no-op `Element.prototype.scrollTo`
-- [ ] 2.2 [RED] Scenario "10,000-item buffer stays bounded" — `apps/web/test/LogConsole.test.tsx`: seed 10k-event `LogStore`, assert `[data-testid="log-row"]` count `< 120`
-- [ ] 2.3 [RED] Scenario "Rendered height matches estimate" — same file: assert every row wrapper `style.height === '28px'`
-- [ ] 2.4 [RED] Scenario "Scroll up detaches" — same file: scroll past 48px threshold, assert "Ir al final" shows the count since detach
-- [ ] 2.5 No new test: Scenario "High ingest does not re-render per frame" (ring buffer outside React) stays covered by existing `apps/web/test/log-store.test.ts`; confirm `LogConsole.tsx` keeps `useSyncExternalStore(store.subscribe, store.getSnapshot)` unchanged
-- [ ] 2.6 [GREEN] Modify `LogConsole.tsx`: import `ROW_HEIGHT`/`ROW_HEIGHT_CLASS` from `row-metrics.ts` (drop local const), add `data-testid="log-row"`/`"log-viewport"`, panel surface + column header + toolbar restyle; 2.2–2.4 pass
-- [ ] 2.7 Modify `HistoricalLogList.tsx`: import shared `ROW_HEIGHT` from `row-metrics.ts` (drop local const — keeps the cross-file invariant with `LogConsole`), same panel + column header restyle
-- [ ] 2.8 Modify `LogRow.tsx`: full restyle to `LEVEL_TEXT_CLASSES`/`LEVEL_ROW_CLASSES`/`LEVEL_ACCENT_CLASSES`, `COLUMN_CLASSES`, `h-full`/`overflow-hidden`, no vertical padding (rendered-height invariant)
-- [ ] 2.9 Modify `FilterBar.tsx`: segmented level control using `LEVEL_CHIP_CLASSES`, token surfaces (structural prop removal already done in 1.16)
-- [ ] 2.10 Verify PR2 green: `npm test`, `npx tsc -b apps/web`, manual scroll-detach + 10k-buffer smoke in dev
+- [x] 2.1 Create `apps/web/test/helpers/dom-layout.ts`: stub `Element.prototype.getBoundingClientRect`, define `clientHeight`/`scrollHeight`, no-op `Element.prototype.scrollTo`
+- [x] 2.2 [RED] Scenario "10,000-item buffer stays bounded" — `apps/web/test/LogConsole.test.tsx`: seed 10k-event `LogStore`, assert `[data-testid="log-row"]` count `< 120`
+- [x] 2.3 [RED] Scenario "Rendered height matches estimate" — same file: assert every row wrapper `style.height === '28px'`
+- [x] 2.4 [RED] Scenario "Scroll up detaches" — same file: scroll past 48px threshold, assert "Ir al final" shows the count since detach
+- [x] 2.5 No new test: Scenario "High ingest does not re-render per frame" (ring buffer outside React) stays covered by existing `apps/web/test/log-store.test.ts`; confirm `LogConsole.tsx` keeps `useSyncExternalStore(store.subscribe, store.getSnapshot)` unchanged
+- [x] 2.6 [GREEN] Modify `LogConsole.tsx`: import `ROW_HEIGHT`/`ROW_HEIGHT_CLASS` from `row-metrics.ts` (drop local const), add `data-testid="log-row"`/`"log-viewport"`, panel surface + column header + toolbar restyle; 2.2–2.4 pass
+- [x] 2.7 Modify `HistoricalLogList.tsx`: import shared `ROW_HEIGHT` from `row-metrics.ts` (drop local const — keeps the cross-file invariant with `LogConsole`), same panel + column header restyle
+- [x] 2.8 Modify `LogRow.tsx`: full restyle to `LEVEL_TEXT_CLASSES`/`LEVEL_ROW_CLASSES`/`LEVEL_ACCENT_CLASSES`, `COLUMN_CLASSES`, `h-full`/`overflow-hidden`, no vertical padding (rendered-height invariant)
+- [x] 2.9 Modify `FilterBar.tsx`: segmented level control using `LEVEL_CHIP_CLASSES`, token surfaces (structural prop removal already done in 1.16)
+- [x] 2.10 Verify PR2 green: `npm test`, `npx tsc -b apps/web`, manual scroll-detach + 10k-buffer smoke in dev
 
 ## Phase 3: Chart & Side Panels (PR 3)
 
