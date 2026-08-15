@@ -62,10 +62,10 @@ Per-slice risk: PR1 Medium (icons.tsx + Sidebar + App shell + 3 test files bundl
 
 ## Phase 3: Chart & Side Panels (PR 3)
 
-- [ ] 3.1 Create `apps/web/src/components/ChartPanel.tsx`: surface + heading wrapper around `RateChart`, `h-56 shrink-0`
-- [ ] 3.2 Modify `RateChart.tsx`: per-level `<linearGradient>` (`0.45 → 0.05`) + full-opacity 1.5px stroke per level (deviation from DESIGN.md's literal 10%, approved); consume `CHART_CHROME` for grid/axis/tooltip
-- [ ] 3.3 Modify `App.tsx`: replace inline chart `div` with `<ChartPanel>`
-- [ ] 3.4 Modify `AlertsPanel.tsx`: panel surface, form/rule/history restyle, `backdrop-blur` toasts (sanctioned glass surface #1)
-- [ ] 3.5 Modify `ExportButton.tsx`: token button styling + `IconDownload`
-- [ ] 3.6 Modify `TokenGate.tsx`: token card + `backdrop-blur` overlay (sanctioned glass surface #2)
-- [ ] 3.7 Verify PR3 green: `npm test`, `npx tsc -b apps/web`, `npm run build -w @logs/web`; confirm zero external network requests on cold load and no `backdrop-filter`/animation inside `[data-testid="log-viewport"]`
+- [x] 3.1 Create `apps/web/src/components/ChartPanel.tsx`: surface + heading wrapper around `RateChart`, `h-56 shrink-0`
+- [x] 3.2 Modify `RateChart.tsx`: per-level `<linearGradient>` (`0.45 → 0.05`) + full-opacity 1.5px stroke per level (deviation from DESIGN.md's literal 10%, approved); consume `CHART_CHROME` for grid/axis/tooltip
+- [x] 3.3 Modify `App.tsx`: replace inline chart `div` with `<ChartPanel>`
+- [x] 3.4 Modify `AlertsPanel.tsx`: panel surface, form/rule/history restyle, `backdrop-blur` toasts (sanctioned glass surface #1)
+- [x] 3.5 Modify `ExportButton.tsx`: token button styling + `IconDownload`
+- [x] 3.6 Modify `TokenGate.tsx`: token card + `backdrop-blur` overlay (sanctioned glass surface #2)
+- [x] 3.7 Verify PR3 green: `npm test`, `npx tsc -b apps/web`, `npm run build -w @logs/web`; confirm zero external network requests on cold load and no `backdrop-filter`/animation inside `[data-testid="log-viewport"]`

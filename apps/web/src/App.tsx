@@ -7,7 +7,7 @@ import { applyModeChange, type ViewMode } from './lib/view-mode';
 import { FilterBar } from './components/FilterBar';
 import { LogConsole } from './components/LogConsole';
 import { HistoricalLogList } from './components/HistoricalLogList';
-import { RateChart } from './components/RateChart';
+import { ChartPanel } from './components/ChartPanel';
 import { AlertsPanel } from './components/AlertsPanel';
 import { ExportButton } from './components/ExportButton';
 import { ConnectionBanner } from './components/ConnectionBanner';
@@ -171,9 +171,7 @@ export default function App() {
           onToChange={setTo}
         />
 
-        <div className="h-44 shrink-0 border-b border-outline-variant/40 px-4 py-2">
-          <RateChart buckets={buckets} />
-        </div>
+        <ChartPanel buckets={buckets} />
 
         <div className="flex min-h-0 flex-1">
           <div className="min-w-0 flex-1">

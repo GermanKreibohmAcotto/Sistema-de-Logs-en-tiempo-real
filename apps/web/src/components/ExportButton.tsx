@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { exportUrl, requestExportTicket, type LogFilterParams } from '../lib/api';
+import { IconDownload } from './icons';
 
 type ExportFormat = 'csv' | 'json' | 'ndjson';
 
@@ -24,7 +25,7 @@ export function ExportButton({ filters }: { filters: LogFilterParams }) {
       <select
         value={format}
         onChange={(e) => setFormat(e.target.value as ExportFormat)}
-        className="rounded border border-slate-700 bg-slate-950 px-1.5 py-1 text-xs text-slate-100"
+        className="rounded-md border border-outline-variant/40 bg-surface-highest px-1.5 py-1 text-xs text-on-surface"
       >
         <option value="csv">CSV</option>
         <option value="json">JSON</option>
@@ -32,8 +33,9 @@ export function ExportButton({ filters }: { filters: LogFilterParams }) {
       </select>
       <button
         onClick={() => void handleExport()}
-        className="rounded bg-indigo-800 px-2 py-1 text-xs font-semibold text-indigo-50 hover:bg-indigo-700"
+        className="flex items-center gap-1.5 rounded-md bg-primary-container px-2.5 py-1 text-xs font-semibold text-on-primary hover:bg-primary"
       >
+        <IconDownload size={14} />
         Exportar
       </button>
     </div>

@@ -82,12 +82,6 @@
 
 None blocking. Note for the record: `RateChart.tsx`, `AlertsPanel.tsx`, `ExportButton.tsx`, `TokenGate.tsx`, and the inline chart wrapper `<div>` in `App.tsx` still use pre-restyle Tailwind default (`slate-*`) classes — intentional, those are Phase 2/3 scope per design's File Changes table and were left untouched this batch.
 
-## Remaining Tasks
-
-Phase 3 (Chart & Side Panels, PR3) — not started, out of scope for this run per explicit PR2 boundary.
-
-- [ ] 3.1–3.7 (Phase 3)
-
 ## Workload / PR Boundary — PR1 (Phase 1)
 
 - Mode: chained PR slice (`auto-chain`, `stacked-to-main`)
@@ -174,6 +168,76 @@ None blocking. `RateChart.tsx`, `AlertsPanel.tsx`, `ExportButton.tsx`, `TokenGat
 
 10/10 Phase 2 tasks complete. Ready for verify (or for PR3 apply once PR2 is reviewed/merged per the `stacked-to-main` chain strategy).
 
-## Status — Combined
+## Status — Combined (post-PR2)
 
-28/28 tasks complete across PR1 (18/18) + PR2 (10/10). Phase 3 (7 tasks) remains, explicitly out of scope for this run per the PR2 boundary.
+28/28 tasks complete across PR1 (18/18) + PR2 (10/10). Phase 3 (7 tasks) remains, explicitly out of scope for that run per the PR2 boundary.
+
+---
+
+## Batch 3: Phase 3 / PR3 (Chart & Side Panels — FINAL SLICE)
+
+### Completed Tasks
+
+- [x] 3.1 Create `apps/web/src/components/ChartPanel.tsx`: surface + heading wrapper around `RateChart`, `h-56 shrink-0`
+- [x] 3.2 Modify `RateChart.tsx`: per-level `<linearGradient>` (`0.45 → 0.05`) + full-opacity 1.5px stroke; consume `CHART_CHROME` for grid/axis/tooltip (settled deviation from DESIGN.md's literal 10%)
+- [x] 3.3 Modify `App.tsx`: replace inline chart `div` with `<ChartPanel buckets={buckets} />`
+- [x] 3.4 Modify `AlertsPanel.tsx`: panel surface (`bg-surface-low`), form/rule/history restyle with token classes, `backdrop-blur-sm` toasts (sanctioned glass surface #1)
+- [x] 3.5 Modify `ExportButton.tsx`: token button styling + `IconDownload`
+- [x] 3.6 Modify `TokenGate.tsx`: token card + `backdrop-blur-md` overlay (sanctioned glass surface #2)
+- [x] 3.7 Verify PR3 green: `npm test`, `npx tsc -b apps/web`, `npm run lint`, `npm run build -w @logs/web` all pass; confirmed zero external network requests on cold load and no `backdrop-filter`/`animate-`/`transition-` inside the log viewport
+
+**7/7 Phase 3 tasks complete. PR3 ends green. This closes out `dashboard-obsidian-flux`.**
+
+### TDD Applicability Note (honest, not fabricated)
+
+Phase 3 is visual-only per tasks.md and design.md — `ChartPanel`/`RateChart`/`AlertsPanel`/`ExportButton`/`TokenGate` are presentational restyles with no new branching logic, no new pure functions, and no new render-invariant seam (unlike PR1's `applyModeChange`/token-map tests or PR2's virtualizer row-count/scroll-detach tests). No new automated test file was added this batch — this matches tasks.md's explicit scope (3.1–3.7 carry no `[RED]`/`[GREEN]` markers, unlike every Phase 1/2 task pair). Searched for a genuine behavioral seam worth testing (gradient id generation, opacity math, toast lifetime timer) and found none that isn't either a pure Recharts prop pass-through or already exercised indirectly by existing suites (`AlertsPanel`'s toast timeout logic is unchanged from pre-restyle, untested before and not newly introduced now). Padding this batch with a className/gradient-string assertion would be ceremonial, not behavioral — declined per the task's explicit instruction not to fabricate such tests.
+
+### Verification Evidence — PR3
+
+| Evidence | Value |
+|---|---|
+| `npm test` | **71 passed / 21 skipped (92 total)** — identical to the PR2 baseline (0 regressions, 0 new tests, as expected for a visual-only slice). 21 skipped are docker-gated integration tests (`isStackReachable()` self-skip); docker stack confirmed down this session. |
+| `npx tsc -b apps/web` | 0 errors. |
+| `npm run lint` | 0 errors/warnings (root `eslint .`). |
+| `npm run build -w @logs/web` | Succeeds. `dist/assets/index-CrsvrBha.js` 682.40 kB (pre-existing >500kB chunk-size warning, unrelated to this batch — same warning appeared in PR2). |
+| Zero external network requests (cold load) | `grep -r "fonts.googleapis\|fonts.gstatic" apps/web/dist/` → **0 matches**. `apps/web/dist/index.html` references only relative `/assets/index-*.js` and `/assets/index-*.css`. All font files in `dist/assets/*.woff2` are self-hosted via `@fontsource-variable/inter` + `@fontsource-variable/jetbrains-mono` (confirmed present as local build artifacts, not remote references). A broad absolute-URL grep across the built JS also surfaced `json-schema.org`, `w3.org`, `bit.ly`, `react.dev`, `redux-toolkit.js.org`, `redux.js.org`, and a `localhost` fallback string — all confirmed to be inert text (JSON-schema `$id` namespace strings, an XML/SVG namespace URI, and React/Redux-Toolkit dev-mode warning message copy bundled into the JS, not `<link>`/`<script src>`/`fetch()` targets triggered on load). |
+| No `backdrop-filter`/animation inside the log viewport | `grep -n "backdrop\|animate-\|transition-"` against `LogConsole.tsx`, `HistoricalLogList.tsx`, `LogRow.tsx` → **0 matches in all three files**. The two sanctioned glass surfaces (`AlertsPanel` toasts, `TokenGate` overlay) are outside `[data-testid="log-viewport"]` by construction — `AlertsPanel` renders in `App.tsx`'s `<aside>`, not inside either scrolling log surface. |
+| Runtime harness (alert toast glass, CSV export, TokenGate overlay blur) | **Not performed** — this CLI sandbox has no browser/GUI tool to drive `npm run dev -w @logs/web` interactively. The full automated suite (`npm test` + `tsc` + `lint` + `build`) plus the two explicit grep-based cross-cutting checks above are the closest available automated proxy for this visual-only batch. |
+| Rollback boundary | `git revert` this PR3 slice. Reverts `ChartPanel.tsx` (new file, removed), `RateChart.tsx`, `App.tsx`'s chart-wrapper line, `AlertsPanel.tsx`, `ExportButton.tsx`, `TokenGate.tsx` to their PR2-era shape. Independent of PR1/PR2: `level-styles.ts`'s `CHART_CHROME`/`LEVEL_CHART_COLORS`/`LEVEL_CHIP_CLASSES` and `icons.tsx`'s `IconDownload` (both PR1) are only *consumed*, never modified, by this batch. No API/DB coordination required. |
+
+### Files Changed — PR3
+
+| File | Action | What Was Done |
+|------|--------|----------------|
+| `apps/web/src/components/ChartPanel.tsx` | Created | New component: `mx-4 mb-3 mt-3 h-56 shrink-0` panel (`rounded-xl border border-outline-variant/40 bg-surface-container`), `uppercase tracking-wide` heading "Eventos por minuto", wraps `RateChart` |
+| `apps/web/src/components/RateChart.tsx` | Modified | Added a `<defs>` block with one `<linearGradient>` per `LOG_LEVELS` entry (`stopOpacity` 0.45 → 0.05); each `<Area>` now uses `fill={url(#rate-gradient-${level})}`, `strokeWidth={1.5}`, `strokeOpacity={1}`, `fillOpacity={1}` (prevents Recharts' 0.6 default from multiplying the gradient's own stops); grid/axis/tooltip/legend text now read `CHART_CHROME` `var(--color-*)` strings instead of hardcoded hex |
+| `apps/web/src/App.tsx` | Modified | Swapped `import { RateChart }` for `import { ChartPanel }`; replaced the inline `<div className="h-44 shrink-0 border-b ...">` chart wrapper with a single `<ChartPanel buckets={buckets} />` |
+| `apps/web/src/components/AlertsPanel.tsx` | Modified | Outer container now `bg-surface-low` (surface ladder); form/rule/history cards restyled to `rounded-lg border border-outline-variant/40 bg-surface-container`; inputs restyled to the `bg-surface-highest` token pattern shared with `FilterBar`; level-toggle buttons in the "Nueva regla" form now use `LEVEL_CHIP_CLASSES` (per-level distinct accent) instead of a flat red; toasts restyled to `border-error/40 bg-error-container/80 text-on-error-container backdrop-blur-sm` (sanctioned glass surface #1); rule-enabled toggle now `bg-secondary-container`/`text-on-surface-variant/60`; delete button reuses the same `bg-error/15 text-error` recipe as the ERROR level chip |
+| `apps/web/src/components/ExportButton.tsx` | Modified | `<select>` and button restyled to token classes (`bg-surface-highest`, `bg-primary-container`/`text-on-primary`); button now renders `<IconDownload size={14} />` alongside the existing "Exportar" text (accessible name still comes from the visible text, so no new `aria-label` needed) |
+| `apps/web/src/components/TokenGate.tsx` | Modified | Outer full-screen container restyled to `bg-background/80 backdrop-blur-md` (sanctioned glass surface #2); form card restyled to `rounded-xl border border-outline-variant/40 bg-surface-container`; input/button restyled to the shared token recipe |
+
+### Deviations from Design — PR3
+
+- **Chart gradient/stroke recipe**: implements the settled user-approved deviation from DESIGN.md's literal "10% opacity" (per-level `stopOpacity` 0.45 → 0.05 gradient + full-opacity 1.5px stroke) — not a new deviation introduced this batch, just the batch that implements the already-settled decision.
+- **Legend text color**: design.md's File Changes/Class-map tables name `CHART_CHROME` for "grid/axis/tooltip" only, not the Recharts `<Legend>`. Added `color: CHART_CHROME.tooltipText` to the Legend's `wrapperStyle` because Recharts' default `DefaultLegendContent` renders item text in an HTML wrapper that inherits CSS `color`, and with no explicit color it defaults to black/inherited-from-body — illegible against the new `bg-surface-container` dark panel. This is the same `var(--color-*)` token already used for tooltip text, applied to the one visible chart-chrome element the design's own file-changes table didn't explicitly enumerate; flagging for `sdd-verify` in case this reads as scope creep, though the alternative (invisible legend text) would be a functional regression on the new panel background.
+- **`AlertsPanel` level-toggle chips reuse `LEVEL_CHIP_CLASSES`**: the pre-restyle form used a flat red for every active level chip. Design's "Level Accent Treatment" requirement scenario names log rows and the stacked chart specifically, not the alert-rule form. Chose to reuse the existing `LEVEL_CHIP_CLASSES` map (already imported this same way in `FilterBar.tsx`) for consistency and to avoid introducing a new one-off color recipe — flagging as a discretionary consistency choice, not a spec-mandated one.
+- **`ChartPanel` owns its own margin (`mx-4 mb-3 mt-3`)**: design.md's Architecture Decision 3 says "App owns only `flex-[3]`, `min-h-0`, gaps." Rather than wrapping `<ChartPanel>` in an extra spacing `<div>` in `App.tsx` (which would contradict task 3.3's literal "replace inline chart div with `<ChartPanel>`" — implying a single-element swap, not a swap-plus-wrapper), the margin was placed on `ChartPanel` itself, consistent with how `LogConsole`/`Sidebar`/`AlertsPanel` already each own their full presentation footprint.
+
+### Issues Found — PR3
+
+None blocking. All five Phase 3 files (`ChartPanel.tsx`, `RateChart.tsx`, `AlertsPanel.tsx`, `ExportButton.tsx`, `TokenGate.tsx`) plus `App.tsx`'s chart wiring are now fully tokenized — no remaining pre-restyle Tailwind default (`slate-*`/`indigo-*`/`red-*`/`emerald-*`) classes anywhere in `apps/web/src`. Grepped to confirm: none found outside `LEVEL_CHART_COLORS`'s sanctioned hex literals.
+
+### Workload / PR Boundary — PR3
+
+- Mode: chained PR slice (`auto-chain`, `stacked-to-main`), targets PR2's branch (retargets to `main` once PR2 merges, per tasks.md's Suggested Work Units table). This is the **final slice** of `dashboard-obsidian-flux`.
+- Current work unit: Unit 3 — "Chart + side panels: `ChartPanel`, gradients, `AlertsPanel`, `ExportButton`, `TokenGate`"
+- Boundary: starts at `RateChart.tsx`'s flat-opacity fill (no gradient), ends at task 3.7's full green verification plus the two explicit cross-cutting greps (external-network, viewport backdrop/animation). Touches `App.tsx` only at the single chart-wiring line — the shared line called out in tasks.md's rollback-boundary column.
+- Estimated review budget impact: **154 authored changed lines** — 133 (insertions+deletions across 5 modified files, via `git diff --numstat`: `App.tsx` 2+4, `AlertsPanel.tsx` 35+29, `ExportButton.tsx` 4+2, `RateChart.tsx` 34+11, `TokenGate.tsx` 7+5) + 21 (1 new file, all-additions, via `wc -l`: `ChartPanel.tsx`). Forecast was ~215; actual (154) is well under both the forecast and the 400-line chained-PR threshold.
+
+### Status — PR3
+
+7/7 Phase 3 tasks complete. PR3 ready for verify/review.
+
+## Status — Combined (final)
+
+**35/35 tasks complete across PR1 (18/18) + PR2 (10/10) + PR3 (7/7). `dashboard-obsidian-flux` implementation is complete; no remaining tasks.**
