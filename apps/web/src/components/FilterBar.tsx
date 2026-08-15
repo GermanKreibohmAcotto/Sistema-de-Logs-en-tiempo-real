@@ -1,5 +1,5 @@
 import { LOG_LEVELS, type LogLevel } from '@logs/shared';
-import { LEVEL_BADGE_CLASSES } from '../lib/level-styles';
+import { LEVEL_CHIP_CLASSES } from '../lib/level-styles';
 
 export interface FilterBarProps {
   levels: LogLevel[];
@@ -12,8 +12,6 @@ export interface FilterBarProps {
   onFromChange: (value: string) => void;
   to: string;
   onToChange: (value: string) => void;
-  mode: 'live' | 'historical';
-  onBackToLive: () => void;
 }
 
 /**
@@ -40,7 +38,7 @@ export function FilterBar(props: FilterBarProps) {
             <button
               key={level}
               onClick={() => toggleLevel(level)}
-              className={`rounded px-2 py-1 text-[10px] font-semibold transition-opacity ${LEVEL_BADGE_CLASSES[level]} ${
+              className={`rounded px-2 py-1 text-[10px] font-semibold transition-opacity ${LEVEL_CHIP_CLASSES[level]} ${
                 active ? 'opacity-100' : 'opacity-30'
               }`}
             >
@@ -84,22 +82,6 @@ export function FilterBar(props: FilterBarProps) {
           />
         </label>
       </div>
-
-      <span
-        className={`rounded px-2 py-1 text-[10px] font-semibold ${
-          props.mode === 'live' ? 'bg-emerald-900 text-emerald-200' : 'bg-slate-700 text-slate-200'
-        }`}
-      >
-        {props.mode === 'live' ? 'EN VIVO' : 'HISTORICO'}
-      </span>
-      {props.mode === 'historical' && (
-        <button
-          onClick={props.onBackToLive}
-          className="rounded bg-emerald-800 px-2 py-1 text-xs font-semibold text-emerald-50 hover:bg-emerald-700"
-        >
-          Volver a en vivo
-        </button>
-      )}
     </div>
   );
 }

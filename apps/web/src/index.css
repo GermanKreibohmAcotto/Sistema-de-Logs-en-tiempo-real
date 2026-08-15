@@ -1,1 +1,75 @@
 @import 'tailwindcss';
+
+/*
+ * Obsidian Flux: depth comes from stacked tonal surfaces rather than heavy
+ * shadows, so the vibrant level accents can carry all the urgency. Tailwind v4
+ * takes its theme from CSS custom properties here - no tailwind.config.js.
+ */
+@theme static {
+  --color-background: #10131a;
+  --color-surface-lowest: #0b0e15;
+  --color-surface-low: #191b23;
+  --color-surface-container: #1d2027;
+  --color-surface-high: #272a31;
+  --color-surface-highest: #32353c;
+  --color-surface-bright: #363941;
+  --color-on-surface: #e1e2ec;
+  --color-on-surface-variant: #c2c6d6;
+  --color-outline: #8c909f;
+  --color-outline-variant: #424754;
+
+  --color-primary: #adc6ff;
+  --color-on-primary: #002e6a;
+  --color-primary-container: #4d8eff;
+  --color-secondary: #4edea3;
+  --color-on-secondary: #003824;
+  --color-secondary-container: #00a572;
+  --color-on-secondary-container: #00311f;
+  --color-tertiary: #ffb786;
+  --color-tertiary-container: #df7412;
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+
+  /* Inter frames the UI; JetBrains Mono is reserved for log data, timestamps
+     and labels, where distinct glyphs make dense strings scannable at speed. */
+  --font-sans: 'Inter Variable', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+}
+
+/* Thin scrollbars so a dense log stream isn't framed by chunky chrome. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-surface-bright) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--color-surface-bright);
+  border-radius: 9999px;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgb(78 222 163 / 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgb(78 222 163 / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgb(78 222 163 / 0);
+  }
+}
+
+.status-pulse {
+  animation: pulse-ring 2s infinite;
+}

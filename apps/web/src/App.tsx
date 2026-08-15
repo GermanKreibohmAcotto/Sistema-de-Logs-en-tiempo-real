@@ -3,6 +3,7 @@ import type { LogLevel, StatsBucket } from '@logs/shared';
 import { LogStore } from './lib/log-store';
 import { WsClient, type ConnectionStatus } from './lib/ws-client';
 import { fetchTimeseries, type LogFilterParams } from './lib/api';
+import { applyModeChange, type ViewMode } from './lib/view-mode';
 import { FilterBar } from './components/FilterBar';
 import { LogConsole } from './components/LogConsole';
 import { HistoricalLogList } from './components/HistoricalLogList';
@@ -10,6 +11,7 @@ import { RateChart } from './components/RateChart';
 import { AlertsPanel } from './components/AlertsPanel';
 import { ExportButton } from './components/ExportButton';
 import { ConnectionBanner } from './components/ConnectionBanner';
+import { Sidebar } from './components/Sidebar';
 import { TokenGate } from './components/TokenGate';
 import { clearDashboardToken, getDashboardToken } from './lib/dashboard-token';
 
@@ -29,6 +31,7 @@ function resolveWsUrl(): string {
 }
 
 const WS_URL = resolveWsUrl();
+const WS_ENDPOINT = new URL(WS_URL).host;
 
 function toIsoOrUndefined(datetimeLocalValue: string): string | undefined {
   if (!datetimeLocalValue) return undefined;
@@ -47,7 +50,7 @@ export default function App() {
   const [debouncedQ, setDebouncedQ] = useState('');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
-  const [mode, setMode] = useState<'live' | 'historical'>('live');
+  const [mode, setMode] = useState<ViewMode>('live');
   const [buckets, setBuckets] = useState<StatsBucket[]>([]);
 
   useEffect(() => {
@@ -129,10 +132,11 @@ export default function App() {
     };
   }, [mode, filters]);
 
-  function handleBackToLive(): void {
-    setFrom('');
-    setTo('');
-    setMode('live');
+  function handleModeChange(next: ViewMode): void {
+    const result = applyModeChange(next, { from, to });
+    setFrom(result.range.from);
+    setTo(result.range.to);
+    setMode(result.mode);
   }
 
   if (!hasToken) {
@@ -140,45 +144,49 @@ export default function App() {
   }
 
   return (
-    <div className="flex h-screen flex-col bg-slate-950 text-slate-100">
-      <header className="flex items-center justify-between border-b border-slate-800 px-4 py-3">
-        <h1 className="text-sm font-semibold text-slate-200">Monitoreo de Logs en Tiempo Real</h1>
-        <div className="flex items-center gap-4">
-          <ConnectionBanner status={status} />
-          <ExportButton filters={filters} />
+    <div className="flex h-screen overflow-hidden bg-background text-on-surface">
+      <Sidebar mode={mode} onModeChange={handleModeChange} status={status} endpoint={WS_ENDPOINT} />
+
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <header className="flex h-16 shrink-0 items-center justify-between border-b border-outline-variant/40 px-4">
+          <h2 className="text-sm font-semibold text-on-surface">
+            {mode === 'live' ? 'Registros en vivo' : 'Registros historicos'}
+          </h2>
+          <div className="flex items-center gap-3">
+            <ConnectionBanner status={status} />
+            <ExportButton filters={filters} />
+          </div>
+        </header>
+
+        <FilterBar
+          levels={levels}
+          onLevelsChange={setLevels}
+          services={servicesInput}
+          onServicesChange={setServicesInput}
+          q={q}
+          onQChange={setQ}
+          from={from}
+          onFromChange={setFrom}
+          to={to}
+          onToChange={setTo}
+        />
+
+        <div className="h-44 shrink-0 border-b border-outline-variant/40 px-4 py-2">
+          <RateChart buckets={buckets} />
         </div>
-      </header>
 
-      <FilterBar
-        levels={levels}
-        onLevelsChange={setLevels}
-        services={servicesInput}
-        onServicesChange={setServicesInput}
-        q={q}
-        onQChange={setQ}
-        from={from}
-        onFromChange={setFrom}
-        to={to}
-        onToChange={setTo}
-        mode={mode}
-        onBackToLive={handleBackToLive}
-      />
-
-      <div className="h-44 shrink-0 border-b border-slate-800 px-4 py-2">
-        <RateChart buckets={buckets} />
-      </div>
-
-      <div className="flex min-h-0 flex-1">
-        <div className="min-w-0 flex-1">
-          {mode === 'live' ? (
-            <LogConsole store={storeRef.current} wsClient={wsClientRef.current} />
-          ) : (
-            <HistoricalLogList filters={filters} />
-          )}
+        <div className="flex min-h-0 flex-1">
+          <div className="min-w-0 flex-1">
+            {mode === 'live' ? (
+              <LogConsole store={storeRef.current} wsClient={wsClientRef.current} />
+            ) : (
+              <HistoricalLogList filters={filters} />
+            )}
+          </div>
+          <aside className="w-80 shrink-0 border-l border-outline-variant/40">
+            <AlertsPanel wsClient={wsClientRef.current} />
+          </aside>
         </div>
-        <aside className="w-80 shrink-0 border-l border-slate-800">
-          <AlertsPanel wsClient={wsClientRef.current} />
-        </aside>
       </div>
     </div>
   );

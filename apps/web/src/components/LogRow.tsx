@@ -1,5 +1,5 @@
 import type { LogEvent } from '@logs/shared';
-import { LEVEL_BADGE_CLASSES } from '../lib/level-styles';
+import { LEVEL_TEXT_CLASSES } from '../lib/level-styles';
 
 export function LogRow({ event }: { event: LogEvent }) {
   const time = new Date(event.timestamp).toLocaleTimeString('es-AR', {
@@ -13,7 +13,7 @@ export function LogRow({ event }: { event: LogEvent }) {
     <div className="flex h-full items-center gap-3 border-b border-slate-800/60 px-3 font-mono text-xs">
       <span className="w-20 shrink-0 text-slate-500">{time}</span>
       <span
-        className={`w-14 shrink-0 rounded px-1.5 py-0.5 text-center font-sans text-[10px] font-semibold ${LEVEL_BADGE_CLASSES[event.level]}`}
+        className={`w-14 shrink-0 rounded px-1.5 py-0.5 text-center font-sans text-[10px] font-semibold ${LEVEL_TEXT_CLASSES[event.level]}`}
       >
         {event.level}
       </span>

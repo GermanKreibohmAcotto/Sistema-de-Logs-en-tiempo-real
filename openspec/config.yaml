@@ -1,0 +1,68 @@
+# openspec/config.yaml
+schema: spec-driven
+
+context: |
+  Tech stack: npm workspaces monorepo, ESM + TypeScript, Node >= 20.
+  Workspaces: packages/shared (@logs/shared, Zod contracts), packages/client
+  (@logs/client, producer SDK), apps/api (@logs/api, Fastify 5), apps/web
+  (@logs/web, React 19 + Vite 8 + Tailwind v4), apps/loadgen (@logs/loadgen).
+  Architecture: layered monorepo, shared Zod contracts consumed by API/client/web.
+  Testing: vitest (unit + integration, self-skipping), ESLint 9, tsc, Prettier.
+  Infra: docker compose (postgres:17-alpine, redis:8-alpine, api, web); CI on
+  Node 20/22 with Postgres/Redis service containers.
+
+strict_tdd: true
+
+testing:
+  test_command: "npm test"
+  test_command_notes: "Runs `vitest run` from repo root across all workspaces."
+  build_command: "npm run build"
+  typecheck_command: "npm run typecheck"
+  typecheck_command_notes: "Runs `npm run build` then `tsc -p apps/api/tsconfig.test.json --noEmit` (the one tsconfig the build scripts don't already cover)."
+  lint_command: "npm run lint"
+  lint_command_notes: "Runs `eslint .` from repo root."
+  format_command: "npm run format"
+  format_command_notes: "Runs `prettier --write .`; no dedicated check-only script exists."
+  coverage_command: null
+  coverage_command_notes: "No dedicated coverage script detected in package.json scripts or CI as of this init."
+  layers:
+    unit: true
+    integration: true
+    e2e: false
+  unit_notes: "Unit tests need no infra. Files: packages/shared/test/*.test.ts, packages/client/test/client.test.ts, apps/api/test/*.test.ts (non-integration), apps/web/test/log-store.test.ts."
+  integration_notes: "apps/api/test/integration/*.test.ts require real Postgres + Redis and self-skip via isStackReachable() (apps/api/test/integration/setup.ts) when unreachable. Confirmed reachable via `docker compose ps` at init time (postgres, redis, api, web all healthy)."
+  e2e_notes: "No E2E tooling (Playwright/Cypress/Selenium) detected."
+  snapshot_at_init:
+    test_files: 14
+    test_count: 75
+    all_passing: true
+    infra_up: true
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Note whether a change touches shared Zod contracts in packages/shared, since API/client/web all depend on them
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Include sequence diagrams for complex flows (e.g. ingest -> WS live filter -> dashboard)
+    - Document architecture decisions with rationale
+    - Call out Tailwind v4 `@theme` token usage in apps/web/src/index.css when touching UI styling
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+    - Respect the 800-line review budget cached for this session (delivery_strategy: auto-chain)
+  apply:
+    guidelines:
+      - Follow existing code patterns (Fastify plugins in apps/api, Zod schemas in packages/shared)
+      - Strict TDD Mode is enabled: write a failing test first (RED), then implement (GREEN), then refactor
+      - Do not modify or revert the in-progress dashboard visual redesign in apps/web (index.css, level-styles.ts, main.tsx, index.html, package.json fontsource deps) unless the change explicitly targets it
+    tdd: true
+    test_command: "npm test"
+  verify:
+    test_command: "npm test"
+    build_command: "npm run build"
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
