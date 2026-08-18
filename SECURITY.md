@@ -4,7 +4,7 @@
 
 Si encontrás una vulnerabilidad de seguridad en este proyecto, **no abras un
 issue público**. Reportala en privado usando [GitHub Security
-Advisories](https://github.com/GermanKreibohmAcotto/Sistema-de-Monitoreo-y-Gesti-n-de-Logs-en-Tiempo-Real/security/advisories/new)
+Advisories](https://github.com/GermanKreibohmAcotto/Sistema-de-Logs-en-tiempo-real/security/advisories/new)
 del repo, o por email a germanka2003@gmail.com.
 
 Incluí, si es posible:

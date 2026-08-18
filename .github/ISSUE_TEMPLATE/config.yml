@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Preguntas y discusión general
-    url: https://github.com/GermanKreibohmAcotto/Sistema-de-Monitoreo-y-Gesti-n-de-Logs-en-Tiempo-Real/discussions
+    url: https://github.com/GermanKreibohmAcotto/Sistema-de-Logs-en-tiempo-real/discussions
     about: Para dudas de uso, ideas sin definir o charla general que no sea un bug o una propuesta concreta.
   - name: Reportar una vulnerabilidad de seguridad
-    url: https://github.com/GermanKreibohmAcotto/Sistema-de-Monitoreo-y-Gesti-n-de-Logs-en-Tiempo-Real/security/advisories/new
+    url: https://github.com/GermanKreibohmAcotto/Sistema-de-Logs-en-tiempo-real/security/advisories/new
     about: No uses un issue público para esto — ver SECURITY.md.

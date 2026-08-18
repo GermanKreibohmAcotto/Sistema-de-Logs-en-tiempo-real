@@ -14,8 +14,8 @@ el enfoque necesita ajustes.
 ## Levantar el entorno
 
 ```bash
-git clone https://github.com/GermanKreibohmAcotto/Sistema-de-Monitoreo-y-Gesti-n-de-Logs-en-Tiempo-Real.git
-cd Sistema-de-Monitoreo-y-Gesti-n-de-Logs-en-Tiempo-Real
+git clone https://github.com/GermanKreibohmAcotto/Sistema-de-Logs-en-tiempo-real.git
+cd Sistema-de-Logs-en-tiempo-real
 npm install
 cp .env.example .env
 docker compose up -d postgres redis   # o tu propia instancia
