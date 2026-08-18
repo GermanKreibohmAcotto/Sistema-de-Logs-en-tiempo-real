@@ -15,7 +15,10 @@ export async function isStackReachable(): Promise<boolean> {
   // what ensureTestDatabase() is for, and it runs after this check), so
   // testing reachability against the target database itself would always
   // report "unreachable" on a first run and skip the whole suite.
-  const client = new pg.Client({ connectionString: adminConnectionString(), connectionTimeoutMillis: 1500 });
+  const client = new pg.Client({
+    connectionString: adminConnectionString(),
+    connectionTimeoutMillis: 1500,
+  });
   try {
     await client.connect();
     await client.end();
@@ -70,7 +73,9 @@ export async function ensureTestDatabase(): Promise<void> {
   try {
     await withAdvisoryLock(admin, async () => {
       const dbName = targetDatabaseName();
-      const { rowCount } = await admin.query('SELECT 1 FROM pg_database WHERE datname = $1', [dbName]);
+      const { rowCount } = await admin.query('SELECT 1 FROM pg_database WHERE datname = $1', [
+        dbName,
+      ]);
       if (rowCount === 0) {
         await admin.query(`CREATE DATABASE "${dbName}"`);
       }

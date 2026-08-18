@@ -6,12 +6,12 @@ compartida entre API y frontend).
 
 ## Autenticación
 
-| Grupo de rutas | Mecanismo |
-|---|---|
-| Ingesta (`POST /v1/logs*`) | Header `x-api-key`. Ver [ENVIAR-LOGS.md](./ENVIAR-LOGS.md). |
-| Lecturas del dashboard | Header `x-dashboard-token`, si `DASHBOARD_TOKEN` está configurado (vacío = abierto). |
-| Export (`GET /v1/logs/export`) | Query param `ticket`, obtenido de `POST /v1/logs/export/ticket` (esa sí lleva el header). Un GET de navegador no puede llevar headers. |
-| WebSocket (`/ws`) | Primer frame `{"type":"auth","token":"..."}`, si `DASHBOARD_TOKEN` está configurado. Un `new WebSocket()` de navegador no puede llevar headers. |
+| Grupo de rutas                 | Mecanismo                                                                                                                                       |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ingesta (`POST /v1/logs*`)     | Header `x-api-key`. Ver [ENVIAR-LOGS.md](./ENVIAR-LOGS.md).                                                                                     |
+| Lecturas del dashboard         | Header `x-dashboard-token`, si `DASHBOARD_TOKEN` está configurado (vacío = abierto).                                                            |
+| Export (`GET /v1/logs/export`) | Query param `ticket`, obtenido de `POST /v1/logs/export/ticket` (esa sí lleva el header). Un GET de navegador no puede llevar headers.          |
+| WebSocket (`/ws`)              | Primer frame `{"type":"auth","token":"..."}`, si `DASHBOARD_TOKEN` está configurado. Un `new WebSocket()` de navegador no puede llevar headers. |
 
 ## `GET /health`
 
@@ -89,13 +89,13 @@ antes de poder volver a dispararse.
 
 Mensajes cliente → servidor (`packages/shared/src/ws-protocol.ts`):
 
-| Tipo | Payload | Qué hace |
-|---|---|---|
-| `auth` | `{ token }` | Requerido primero si `DASHBOARD_TOKEN` está configurado; si no llega en 5s o es inválido, el servidor cierra con código `4401`. |
-| `subscribe` | `{ filters }` | Mismo shape de filtros que `GET /v1/logs` (sin `cursor`/`limit`). Reemplaza la suscripción anterior. |
-| `pause` | — | Deja de recibir frames `logs`, cuenta lo que se pierde. |
-| `resume` | — | Reanuda; responde `{ type: 'paused', missed }` con lo perdido durante la pausa. |
-| `ping` | — | El servidor responde `pong`. |
+| Tipo        | Payload       | Qué hace                                                                                                                        |
+| ----------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `auth`      | `{ token }`   | Requerido primero si `DASHBOARD_TOKEN` está configurado; si no llega en 5s o es inválido, el servidor cierra con código `4401`. |
+| `subscribe` | `{ filters }` | Mismo shape de filtros que `GET /v1/logs` (sin `cursor`/`limit`). Reemplaza la suscripción anterior.                            |
+| `pause`     | —             | Deja de recibir frames `logs`, cuenta lo que se pierde.                                                                         |
+| `resume`    | —             | Reanuda; responde `{ type: 'paused', missed }` con lo perdido durante la pausa.                                                 |
+| `ping`      | —             | El servidor responde `pong`.                                                                                                    |
 
 Mensajes servidor → cliente: `logs` (batch de eventos que matchean el
 filtro), `dropped` (se descartó un lote por backpressure), `alert` (una regla

@@ -1,7 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LogClient } from '../src/index.js';
 
-function jsonResponse(status: number, body: unknown = {}, headers: Record<string, string> = {}): Response {
+function jsonResponse(
+  status: number,
+  body: unknown = {},
+  headers: Record<string, string> = {},
+): Response {
   return new Response(JSON.stringify(body), { status, headers });
 }
 
@@ -27,7 +31,12 @@ describe('LogClient', () => {
 
   it('auto-flushes once maxBatchSize is reached', async () => {
     fetchMock.mockResolvedValue(jsonResponse(202, { accepted: 2 }));
-    const client = new LogClient({ url: 'http://api.test', apiKey: 'k', maxBatchSize: 2, flushIntervalMs: 60_000 });
+    const client = new LogClient({
+      url: 'http://api.test',
+      apiKey: 'k',
+      maxBatchSize: 2,
+      flushIntervalMs: 60_000,
+    });
     client.info('svc', 'uno');
     client.info('svc', 'dos');
     // log() fires the flush but doesn't await it - give the microtask a tick.

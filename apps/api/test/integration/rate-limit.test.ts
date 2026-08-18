@@ -36,7 +36,11 @@ describe.skipIf(!available)('rate limiting (needs Postgres/Redis reachable)', ()
       method: 'POST',
       url: '/v1/logs/bulk',
       headers: { 'x-api-key': apiKey },
-      payload: Array.from({ length: 5 }, (_, i) => ({ level: 'INFO', service, message: `log-${i}` })),
+      payload: Array.from({ length: 5 }, (_, i) => ({
+        level: 'INFO',
+        service,
+        message: `log-${i}`,
+      })),
     });
     expect(withinLimit.statusCode).toBe(202);
 

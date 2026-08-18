@@ -27,11 +27,7 @@ export async function requireApiKey(request: FastifyRequest, reply: FastifyReply
   // A bulk request of N logs must cost N tokens, not 1 - otherwise the
   // limit is trivially evaded by batching everything into one request.
   const requestedTokens = Array.isArray(request.body) ? request.body.length || 1 : 1;
-  const result = await consumeTokens(
-    lookup.record.id,
-    lookup.record.rateLimitRpm,
-    requestedTokens,
-  );
+  const result = await consumeTokens(lookup.record.id, lookup.record.rateLimitRpm, requestedTokens);
 
   reply.header('X-RateLimit-Limit', result.limit);
   reply.header('X-RateLimit-Remaining', result.remaining);

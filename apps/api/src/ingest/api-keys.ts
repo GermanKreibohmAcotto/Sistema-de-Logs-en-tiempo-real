@@ -14,9 +14,7 @@ export interface ApiKeyRecord {
 }
 
 export type ApiKeyLookup =
-  | { status: 'valid'; record: ApiKeyRecord }
-  | { status: 'not_found' }
-  | { status: 'revoked' };
+  { status: 'valid'; record: ApiKeyRecord } | { status: 'not_found' } | { status: 'revoked' };
 
 function hashKey(rawKey: string): string {
   return createHash('sha256').update(rawKey).digest('hex');
@@ -86,7 +84,9 @@ export async function validateApiKey(rawKey: string): Promise<ApiKeyLookup> {
     };
   }
 
-  await redisCmd.set(cacheKey, JSON.stringify(result), 'EX', CACHE_TTL_SECONDS).catch(() => undefined);
+  await redisCmd
+    .set(cacheKey, JSON.stringify(result), 'EX', CACHE_TTL_SECONDS)
+    .catch(() => undefined);
 
   if (result.status === 'valid') {
     pool

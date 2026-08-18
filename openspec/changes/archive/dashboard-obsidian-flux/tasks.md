@@ -2,14 +2,14 @@
 
 ## Review Workload Forecast
 
-| Field | Value |
-|-------|-------|
-| Estimated changed lines | PR1 ~560 · PR2 ~510 · PR3 ~215 · Total ~1,285 |
-| 800-line budget risk | Medium |
-| Chained PRs recommended | Yes |
-| Suggested split | PR 1 (Shell + tokens) → PR 2 (Stream surfaces) → PR 3 (Chart + side panels) |
-| Delivery strategy | auto-chain |
-| Chain strategy | stacked-to-main |
+| Field                   | Value                                                                       |
+| ----------------------- | --------------------------------------------------------------------------- |
+| Estimated changed lines | PR1 ~560 · PR2 ~510 · PR3 ~215 · Total ~1,285                               |
+| 800-line budget risk    | Medium                                                                      |
+| Chained PRs recommended | Yes                                                                         |
+| Suggested split         | PR 1 (Shell + tokens) → PR 2 (Stream surfaces) → PR 3 (Chart + side panels) |
+| Delivery strategy       | auto-chain                                                                  |
+| Chain strategy          | stacked-to-main                                                             |
 
 Decision needed before apply: No
 Chained PRs recommended: Yes
@@ -20,11 +20,11 @@ Per-slice risk: PR1 Medium (icons.tsx + Sidebar + App shell + 3 test files bundl
 
 ### Suggested Work Units
 
-| Unit | Goal | Likely PR | Focused test command | Runtime harness | Rollback boundary |
-|------|------|-----------|----------------------|-----------------|-------------------|
-| 1 | Shell + tokens; repairs the pre-existing `LEVEL_BADGE_CLASSES` break; must end green | PR 1 → main | `npm test && npx tsc -b apps/web` | `npm run dev -w @logs/web`: click "En vivo"/"Histórico" in Sidebar, confirm live console renders, dot reflects `WsClient` status | `git revert` PR1 + `npm install`; App.tsx/FilterBar.tsx/LogRow.tsx return to pre-restyle shape; no API/DB coordination |
-| 2 | Stream surfaces: virtualized console, historical list, row/filter restyle | PR 2 → PR1 branch (retarget to main once PR1 merges) | `npx vitest run apps/web/test/LogConsole.test.tsx` | `npm run dev -w @logs/web` + `npm run load` (loadgen) feeding high-ingest WS traffic; scroll up mid-stream, confirm "Ir al final (N nuevos)" | `git revert` PR2 commits only; `row-metrics.ts` stays owned by PR1, no cross-slice break |
-| 3 | Chart + side panels: `ChartPanel`, gradients, `AlertsPanel`, `ExportButton`, `TokenGate` | PR 3 → PR2 branch (retarget to main once PR2 merges) | `npm test && npm run build -w @logs/web` | `npm run dev -w @logs/web`: trigger an alert rule (toast glass), export CSV, submit `TokenGate` (overlay blur) | `git revert` PR3 commits; App.tsx's `<ChartPanel>` swap is the only shared line, reverts in the same commit |
+| Unit | Goal                                                                                     | Likely PR                                            | Focused test command                               | Runtime harness                                                                                                                              | Rollback boundary                                                                                                      |
+| ---- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| 1    | Shell + tokens; repairs the pre-existing `LEVEL_BADGE_CLASSES` break; must end green     | PR 1 → main                                          | `npm test && npx tsc -b apps/web`                  | `npm run dev -w @logs/web`: click "En vivo"/"Histórico" in Sidebar, confirm live console renders, dot reflects `WsClient` status             | `git revert` PR1 + `npm install`; App.tsx/FilterBar.tsx/LogRow.tsx return to pre-restyle shape; no API/DB coordination |
+| 2    | Stream surfaces: virtualized console, historical list, row/filter restyle                | PR 2 → PR1 branch (retarget to main once PR1 merges) | `npx vitest run apps/web/test/LogConsole.test.tsx` | `npm run dev -w @logs/web` + `npm run load` (loadgen) feeding high-ingest WS traffic; scroll up mid-stream, confirm "Ir al final (N nuevos)" | `git revert` PR2 commits only; `row-metrics.ts` stays owned by PR1, no cross-slice break                               |
+| 3    | Chart + side panels: `ChartPanel`, gradients, `AlertsPanel`, `ExportButton`, `TokenGate` | PR 3 → PR2 branch (retarget to main once PR2 merges) | `npm test && npm run build -w @logs/web`           | `npm run dev -w @logs/web`: trigger an alert rule (toast glass), export CSV, submit `TokenGate` (overlay blur)                               | `git revert` PR3 commits; App.tsx's `<ChartPanel>` swap is the only shared line, reverts in the same commit            |
 
 ## Phase 1: Shell & Tokens (PR 1 — must end green)
 

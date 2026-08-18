@@ -30,7 +30,10 @@ export function LogRow({ event }: { event: LogEvent }) {
       >
         {event.level}
       </span>
-      <span className={`${COLUMN_CLASSES.service} truncate font-sans text-on-surface-variant`} title={event.service}>
+      <span
+        className={`${COLUMN_CLASSES.service} truncate font-sans text-on-surface-variant`}
+        title={event.service}
+      >
         {event.service}
       </span>
       <span className={`${COLUMN_CLASSES.message} truncate text-on-surface`} title={event.message}>

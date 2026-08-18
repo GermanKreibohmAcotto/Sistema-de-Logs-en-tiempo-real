@@ -51,7 +51,11 @@ function printUsage(): void {
 const MESSAGE_TEMPLATES: Record<LogLevel, string[]> = {
   DEBUG: ['cache hit for key %s', 'entrando al handler de %s', 'consulta a DB tardo %dms'],
   INFO: ['request completada', 'usuario inicio sesion en %s', 'job de %s finalizado'],
-  WARN: ['reintentando conexion a %s', 'respuesta lenta de %s (%dms)', 'profundidad de cola alta: %d'],
+  WARN: [
+    'reintentando conexion a %s',
+    'respuesta lenta de %s (%dms)',
+    'profundidad de cola alta: %d',
+  ],
   ERROR: ['fallo al conectar con %s', 'timeout esperando a %s', 'excepcion no manejada en %s'],
   FATAL: ['memoria agotada en %s', 'pool de conexiones a DB agotado', 'panico en %s'],
 };
@@ -118,7 +122,10 @@ function sleep(ms: number): Promise<void> {
 
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
-  const serviceNames = Array.from({ length: Math.max(1, args.services) }, (_, i) => `service-${i + 1}`);
+  const serviceNames = Array.from(
+    { length: Math.max(1, args.services) },
+    (_, i) => `service-${i + 1}`,
+  );
   const pool = new Pool(args.url, { connections: 32, pipelining: 1 });
   const stats = newStats();
 

@@ -59,7 +59,7 @@ El write-buffer (`apps/api/src/ingest/write-buffer.ts`) batchea inserts
 (`INSERT ... SELECT * FROM unnest(...)`, flush cada `WRITE_FLUSH_MS` o
 `WRITE_FLUSH_ROWS` filas) de forma asíncrona respecto de la respuesta HTTP.
 Mantiene la latencia de ingesta baja y desacopla el throughput de la latencia
-del disco, a costa de una ventana de durabilidad *at-most-once* de ese orden.
+del disco, a costa de una ventana de durabilidad _at-most-once_ de ese orden.
 Mitigado con: flush forzado en `SIGTERM`/`SIGINT`, buffer acotado
 (`MAX_BUFFER_ROWS`, responde `503` si se llena en vez de crecer sin límite), y
 `INGEST_SYNC=true` para quien prefiera esperar el commit a costa de latencia.

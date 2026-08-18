@@ -44,6 +44,7 @@ jobs:
 
       - run: npm ci
       - run: npm run lint
+      - run: npm run format:check
       # Builds every workspace and typechecks apps/api's test files (the one
       # tsconfig the build scripts don't already cover) - see package.json.
       - run: npm run typecheck

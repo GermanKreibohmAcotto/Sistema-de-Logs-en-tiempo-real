@@ -67,9 +67,7 @@ export async function consumeTokens(
 
   const tokens = Number(tokensStr);
   const allowed = allowedFlag === 1;
-  const retryAfterSeconds = allowed
-    ? 0
-    : Math.max(1, Math.ceil((requested - tokens) / refillRate));
+  const retryAfterSeconds = allowed ? 0 : Math.max(1, Math.ceil((requested - tokens) / refillRate));
 
   return { allowed, limit: rpm, remaining: Math.max(0, Math.floor(tokens)), retryAfterSeconds };
 }

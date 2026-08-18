@@ -13,7 +13,8 @@ import { installDomLayoutStubs } from './helpers/dom-layout.js';
 if (typeof globalThis.requestAnimationFrame === 'undefined') {
   globalThis.requestAnimationFrame = ((cb: FrameRequestCallback) =>
     setTimeout(() => cb(performance.now()), 0)) as typeof requestAnimationFrame;
-  globalThis.cancelAnimationFrame = ((id: number) => clearTimeout(id)) as typeof cancelAnimationFrame;
+  globalThis.cancelAnimationFrame = ((id: number) =>
+    clearTimeout(id)) as typeof cancelAnimationFrame;
 }
 
 installDomLayoutStubs();

@@ -9,7 +9,9 @@ import { rowToRule, refreshRulesCache } from '../alerts/rules-cache.js';
 const RULE_COLUMNS = `id, name, levels::text[] AS levels, service, threshold, window_seconds, cooldown_seconds, enabled, created_at, updated_at`;
 
 const idParamSchema = z.object({ id: z.coerce.number().int().positive() });
-const listAlertsQuerySchema = z.object({ limit: z.coerce.number().int().min(1).max(200).default(50) });
+const listAlertsQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+});
 
 const FIELD_TO_COLUMN: Record<string, string> = {
   name: 'name',
@@ -61,7 +63,9 @@ export const alertsRoutes: FastifyPluginAsync = async (fastify) => {
 
     const bodyParsed = alertRuleInputSchema.partial().safeParse(request.body);
     if (!bodyParsed.success) {
-      return reply.code(400).send({ error: 'invalid_payload', details: bodyParsed.error.flatten() });
+      return reply
+        .code(400)
+        .send({ error: 'invalid_payload', details: bodyParsed.error.flatten() });
     }
 
     const setClauses: string[] = [];

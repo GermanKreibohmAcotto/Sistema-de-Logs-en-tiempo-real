@@ -32,7 +32,7 @@ export async function runMigrations(): Promise<void> {
     for (const file of files) {
       if (applied.has(file)) continue;
       const sql = readFileSync(join(migrationsDir, file), 'utf-8');
-       
+
       console.log(`Aplicando migracion: ${file}`);
       await client.query('BEGIN');
       try {
@@ -53,12 +53,10 @@ const isMain = process.argv[1] && import.meta.url === pathToFileURL(process.argv
 if (isMain) {
   runMigrations()
     .then(() => {
-       
       console.log('Migraciones al dia.');
       return pool.end();
     })
     .catch((err) => {
-       
       console.error(err);
       process.exitCode = 1;
       return pool.end();

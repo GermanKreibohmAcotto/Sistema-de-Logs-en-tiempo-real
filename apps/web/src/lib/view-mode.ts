@@ -16,5 +16,7 @@ export function applyModeChange(
   next: ViewMode,
   range: TimeRange,
 ): { mode: ViewMode; range: TimeRange } {
-  return next === 'live' ? { mode: 'live', range: { from: '', to: '' } } : { mode: 'historical', range };
+  return next === 'live'
+    ? { mode: 'live', range: { from: '', to: '' } }
+    : { mode: 'historical', range };
 }

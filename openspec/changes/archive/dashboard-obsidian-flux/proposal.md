@@ -41,22 +41,22 @@ Operators scan this dashboard during incidents, where a missed FATAL costs downt
 
 ## Affected Areas
 
-| Area | Impact | Description |
-|------|--------|-------------|
-| `apps/web/src/components/Sidebar.tsx`, `icons.tsx` | New | Mode nav + connection card; SVG set |
-| `apps/web/src/App.tsx` | Modified | Sidebar shell layout |
-| `apps/web/src/components/*.tsx` | Modified | 9 components restyled |
-| `apps/web/src/index.css`, `lib/level-styles.ts` | Modified | Tokens (already applied) |
-| `packages/shared`, `apps/api` | None | Untouched |
+| Area                                               | Impact   | Description                         |
+| -------------------------------------------------- | -------- | ----------------------------------- |
+| `apps/web/src/components/Sidebar.tsx`, `icons.tsx` | New      | Mode nav + connection card; SVG set |
+| `apps/web/src/App.tsx`                             | Modified | Sidebar shell layout                |
+| `apps/web/src/components/*.tsx`                    | Modified | 9 components restyled               |
+| `apps/web/src/index.css`, `lib/level-styles.ts`    | Modified | Tokens (already applied)            |
+| `packages/shared`, `apps/api`                      | None     | Untouched                           |
 
 ## Risks
 
-| Risk | Likelihood | Mitigation |
-|------|------------|------------|
-| Wide shallow diff over ~13 files with zero UI coverage: `npm test`, `typecheck`, `lint` prove compilation and store logic only, so layout and state regressions pass green | High | Minimal component-test net (root has `vitest` + `jsdom`; needs `@testing-library/react`) for sidebar mode switching and console virtualization/auto-scroll, plus a per-state manual checklist in `tasks.md` |
-| Restyle breaks virtualization, row height, or scroll anchoring | Med | Encode the four invariants as spec requirements; assert DOM row count against a 10k buffer |
-| Sidebar relocation silently drops a `FilterBar` control | Med | Diff `FilterBar` props before/after; no handler may be orphaned |
-| 800-line review budget exceeded | Med | `sdd-tasks` slices chained PRs: shell first, then components |
+| Risk                                                                                                                                                                       | Likelihood | Mitigation                                                                                                                                                                                                  |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Wide shallow diff over ~13 files with zero UI coverage: `npm test`, `typecheck`, `lint` prove compilation and store logic only, so layout and state regressions pass green | High       | Minimal component-test net (root has `vitest` + `jsdom`; needs `@testing-library/react`) for sidebar mode switching and console virtualization/auto-scroll, plus a per-state manual checklist in `tasks.md` |
+| Restyle breaks virtualization, row height, or scroll anchoring                                                                                                             | Med        | Encode the four invariants as spec requirements; assert DOM row count against a 10k buffer                                                                                                                  |
+| Sidebar relocation silently drops a `FilterBar` control                                                                                                                    | Med        | Diff `FilterBar` props before/after; no handler may be orphaned                                                                                                                                             |
+| 800-line review budget exceeded                                                                                                                                            | Med        | `sdd-tasks` slices chained PRs: shell first, then components                                                                                                                                                |
 
 ## Rollback Plan
 

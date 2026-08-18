@@ -1,10 +1,23 @@
-import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { LOG_LEVELS } from '@logs/shared';
 import type { StatsBucket } from '@logs/shared';
 import { CHART_CHROME, LEVEL_CHART_COLORS } from '../lib/level-styles';
 
 function formatBucketTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString('es-AR', { hour12: false, hour: '2-digit', minute: '2-digit' });
+  return new Date(iso).toLocaleTimeString('es-AR', {
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
 
 /**

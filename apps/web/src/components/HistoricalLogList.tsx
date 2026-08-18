@@ -105,7 +105,9 @@ export function HistoricalLogList({ filters }: { filters: LogFilterParams }) {
 
       <div ref={parentRef} className="flex-1 overflow-y-auto">
         {items.length === 0 && !loading ? (
-          <p className="p-4 text-sm text-on-surface-variant/60">Sin resultados para estos filtros.</p>
+          <p className="p-4 text-sm text-on-surface-variant/60">
+            Sin resultados para estos filtros.
+          </p>
         ) : (
           <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
             {virtualizer.getVirtualItems().map((virtualRow) => {
@@ -130,7 +132,9 @@ export function HistoricalLogList({ filters }: { filters: LogFilterParams }) {
           </div>
         )}
         <div ref={sentinelRef} className="h-4" />
-        {loading && <p className="p-3 text-center text-xs text-on-surface-variant/60">Cargando...</p>}
+        {loading && (
+          <p className="p-3 text-center text-xs text-on-surface-variant/60">Cargando...</p>
+        )}
       </div>
     </div>
   );

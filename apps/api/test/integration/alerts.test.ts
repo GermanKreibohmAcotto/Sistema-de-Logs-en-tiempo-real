@@ -59,7 +59,11 @@ describe.skipIf(!available)('alert engine (needs Postgres/Redis reachable)', () 
       method: 'POST',
       url: '/v1/logs/bulk',
       headers: { 'x-api-key': apiKey },
-      payload: Array.from({ length: 3 }, (_, i) => ({ level: 'ERROR', service, message: `boom-${i}` })),
+      payload: Array.from({ length: 3 }, (_, i) => ({
+        level: 'ERROR',
+        service,
+        message: `boom-${i}`,
+      })),
     });
     expect(res.statusCode).toBe(202);
 
@@ -80,7 +84,11 @@ describe.skipIf(!available)('alert engine (needs Postgres/Redis reachable)', () 
       method: 'POST',
       url: '/v1/logs/bulk',
       headers: { 'x-api-key': apiKey },
-      payload: Array.from({ length: 3 }, (_, i) => ({ level: 'ERROR', service, message: `boom-again-${i}` })),
+      payload: Array.from({ length: 3 }, (_, i) => ({
+        level: 'ERROR',
+        service,
+        message: `boom-again-${i}`,
+      })),
     });
     expect(res.statusCode).toBe(202);
     await sleep(300);

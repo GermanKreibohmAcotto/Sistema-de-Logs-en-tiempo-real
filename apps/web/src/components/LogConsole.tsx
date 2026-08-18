@@ -72,7 +72,8 @@ export function LogConsole({ store, wsClient }: { store: LogStore; wsClient: WsC
     }
   }
 
-  const newSinceUnpin = unpinnedAtLength === null ? 0 : Math.max(0, items.length - unpinnedAtLength);
+  const newSinceUnpin =
+    unpinnedAtLength === null ? 0 : Math.max(0, items.length - unpinnedAtLength);
 
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-xl border border-outline-variant/40 bg-surface-lowest">
@@ -117,7 +118,12 @@ export function LogConsole({ store, wsClient }: { store: LogStore; wsClient: WsC
         <span className={COLUMN_CLASSES.message}>Mensaje</span>
       </div>
 
-      <div ref={parentRef} onScroll={handleScroll} data-testid="log-viewport" className="flex-1 overflow-y-auto">
+      <div
+        ref={parentRef}
+        onScroll={handleScroll}
+        data-testid="log-viewport"
+        className="flex-1 overflow-y-auto"
+      >
         {items.length === 0 ? (
           <p className="p-4 text-sm text-on-surface-variant/60">Esperando logs...</p>
         ) : (

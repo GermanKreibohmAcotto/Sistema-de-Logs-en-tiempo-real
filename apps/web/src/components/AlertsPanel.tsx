@@ -1,5 +1,11 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { LOG_LEVELS, type Alert, type AlertRule, type AlertRuleInput, type LogLevel } from '@logs/shared';
+import {
+  LOG_LEVELS,
+  type Alert,
+  type AlertRule,
+  type AlertRuleInput,
+  type LogLevel,
+} from '@logs/shared';
 import type { WsClient } from '../lib/ws-client';
 import { LEVEL_CHIP_CLASSES } from '../lib/level-styles';
 import {
@@ -101,13 +107,16 @@ export function AlertsPanel({ wsClient }: { wsClient: WsClient }) {
             key={t.id}
             className="pointer-events-auto rounded-lg border border-error/40 bg-error-container/80 px-3 py-2 text-xs text-on-error-container shadow-lg backdrop-blur-sm"
           >
-            <strong>{t.ruleName}</strong>: {t.count} eventos en {t.windowSeconds}s (umbral {t.threshold})
+            <strong>{t.ruleName}</strong>: {t.count} eventos en {t.windowSeconds}s (umbral{' '}
+            {t.threshold})
           </div>
         ))}
       </div>
 
       <section>
-        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">Nueva regla</h2>
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+          Nueva regla
+        </h2>
         <form
           onSubmit={handleCreate}
           className="flex flex-col gap-2 rounded-lg border border-outline-variant/40 bg-surface-container p-3"
@@ -126,7 +135,9 @@ export function AlertsPanel({ wsClient }: { wsClient: WsClient }) {
                 key={level}
                 onClick={() => toggleLevel(level)}
                 className={`rounded-md px-2 py-1 text-[10px] font-semibold ${
-                  form.levels.includes(level) ? LEVEL_CHIP_CLASSES[level] : 'bg-surface-highest text-on-surface-variant'
+                  form.levels.includes(level)
+                    ? LEVEL_CHIP_CLASSES[level]
+                    : 'bg-surface-highest text-on-surface-variant'
                 }`}
               >
                 {level}
@@ -166,7 +177,9 @@ export function AlertsPanel({ wsClient }: { wsClient: WsClient }) {
                 type="number"
                 min={0}
                 value={form.cooldownSeconds}
-                onChange={(e) => setForm((f) => ({ ...f, cooldownSeconds: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, cooldownSeconds: Number(e.target.value) }))
+                }
                 className="mt-0.5 w-full rounded-md border border-outline-variant/40 bg-surface-highest px-2 py-1 text-xs text-on-surface"
               />
             </label>
@@ -183,7 +196,9 @@ export function AlertsPanel({ wsClient }: { wsClient: WsClient }) {
       </section>
 
       <section>
-        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">Reglas</h2>
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+          Reglas
+        </h2>
         <ul className="flex flex-col gap-1.5">
           {rules.map((rule) => (
             <li
@@ -193,8 +208,8 @@ export function AlertsPanel({ wsClient }: { wsClient: WsClient }) {
               <div>
                 <span className="font-semibold text-on-surface">{rule.name}</span>{' '}
                 <span className="text-on-surface-variant/70">
-                  {rule.levels.join(',')} {rule.service ? `@ ${rule.service}` : ''} - {rule.threshold}/
-                  {rule.windowSeconds}s
+                  {rule.levels.join(',')} {rule.service ? `@ ${rule.service}` : ''} -{' '}
+                  {rule.threshold}/{rule.windowSeconds}s
                 </span>
               </div>
               <div className="flex gap-1.5">
@@ -217,24 +232,32 @@ export function AlertsPanel({ wsClient }: { wsClient: WsClient }) {
               </div>
             </li>
           ))}
-          {rules.length === 0 && <p className="text-xs text-on-surface-variant/60">Sin reglas todavia.</p>}
+          {rules.length === 0 && (
+            <p className="text-xs text-on-surface-variant/60">Sin reglas todavia.</p>
+          )}
         </ul>
       </section>
 
       <section>
-        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">Historial</h2>
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+          Historial
+        </h2>
         <ul className="flex flex-col gap-1">
           {history.map((alert) => (
             <li
               key={alert.id}
               className="rounded-lg border border-outline-variant/40 bg-surface-container px-2 py-1.5 text-xs text-on-surface-variant"
             >
-              <span className="text-on-surface-variant/60">{new Date(alert.triggeredAt).toLocaleString('es-AR')}</span>{' '}
-              <strong className="text-on-surface">{alert.ruleName}</strong>: {alert.count}/{alert.threshold} en{' '}
-              {alert.windowSeconds}s
+              <span className="text-on-surface-variant/60">
+                {new Date(alert.triggeredAt).toLocaleString('es-AR')}
+              </span>{' '}
+              <strong className="text-on-surface">{alert.ruleName}</strong>: {alert.count}/
+              {alert.threshold} en {alert.windowSeconds}s
             </li>
           ))}
-          {history.length === 0 && <p className="text-xs text-on-surface-variant/60">Sin alertas todavia.</p>}
+          {history.length === 0 && (
+            <p className="text-xs text-on-surface-variant/60">Sin alertas todavia.</p>
+          )}
         </ul>
       </section>
     </div>

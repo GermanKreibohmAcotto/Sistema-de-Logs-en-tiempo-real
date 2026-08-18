@@ -16,7 +16,10 @@ export function isDashboardTokenValid(token: string | undefined): boolean {
 }
 
 /** preHandler guarding dashboard reads (query/stats/alerts) and the export ticket route. */
-export async function requireDashboardToken(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+export async function requireDashboardToken(
+  request: FastifyRequest,
+  reply: FastifyReply,
+): Promise<void> {
   const header = request.headers['x-dashboard-token'];
   if (!isDashboardTokenValid(typeof header === 'string' ? header : undefined)) {
     await reply.code(401).send({ error: 'invalid_dashboard_token' });

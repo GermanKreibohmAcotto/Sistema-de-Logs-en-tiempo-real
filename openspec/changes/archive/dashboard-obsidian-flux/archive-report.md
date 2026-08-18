@@ -2,12 +2,12 @@
 
 ## Change Metadata
 
-| Field | Value |
-|-------|-------|
-| Change Name | dashboard-obsidian-flux |
-| Status | **ARCHIVED** |
-| Archive Date | 2026-08-15 |
-| Archive Version | 1.0 |
+| Field           | Value                   |
+| --------------- | ----------------------- |
+| Change Name     | dashboard-obsidian-flux |
+| Status          | **ARCHIVED**            |
+| Archive Date    | 2026-08-15              |
+| Archive Version | 1.0                     |
 
 ## Final State Summary
 
@@ -17,11 +17,11 @@ The `dashboard-obsidian-flux` change has been successfully completed, verified, 
 
 All three slices are committed and merged to `main`:
 
-| Slice | Commit | Title | Tasks |
-|-------|--------|-------|-------|
-| PR1 (Shell + Tokens) | d9198e0 | feat(web): shell Obsidian Flux con sidebar de modos y tokens de diseno | 18/18 |
-| PR2 (Stream Surfaces) | 2476ec3 | (inferred from verify-report; stream surfaces + virtualization) | 10/10 |
-| PR3 (Chart + Side Panels) | 00ab2fe | (inferred from verify-report; chart gradients + panel restyle) | 7/7 |
+| Slice                     | Commit  | Title                                                                  | Tasks |
+| ------------------------- | ------- | ---------------------------------------------------------------------- | ----- |
+| PR1 (Shell + Tokens)      | d9198e0 | feat(web): shell Obsidian Flux con sidebar de modos y tokens de diseno | 18/18 |
+| PR2 (Stream Surfaces)     | 2476ec3 | (inferred from verify-report; stream surfaces + virtualization)        | 10/10 |
+| PR3 (Chart + Side Panels) | 00ab2fe | (inferred from verify-report; chart gradients + panel restyle)         | 7/7   |
 
 All three commits stack on top of `82819f2` (the pre-change state).
 
@@ -51,19 +51,20 @@ All three commits stack on top of `82819f2` (the pre-change state).
 
 ### Merged Specs
 
-| Source | Destination | Status |
-|--------|-------------|--------|
+| Source                                                                   | Destination                         | Status                               |
+| ------------------------------------------------------------------------ | ----------------------------------- | ------------------------------------ |
 | `openspec/changes/dashboard-obsidian-flux/specs/dashboard-shell/spec.md` | `openspec/specs/dashboard-shell.md` | ✅ MERGED (diff-verified: identical) |
 
 This was the first entry into `openspec/specs/` (directory was previously empty; `.gitkeep` removed via the merge operation).
 
 ### Change Folder Moved
 
-| Source | Destination | Status |
-|--------|-------------|--------|
+| Source                                      | Destination                                         | Status                         |
+| ------------------------------------------- | --------------------------------------------------- | ------------------------------ |
 | `openspec/changes/dashboard-obsidian-flux/` | `openspec/changes/archive/dashboard-obsidian-flux/` | ✅ MOVED (git mv, git-tracked) |
 
 Archived folder structure verified to contain all six phase artifacts:
+
 - `proposal.md`
 - `specs/dashboard-shell/spec.md`
 - `design.md`
@@ -75,15 +76,15 @@ Archived folder structure verified to contain all six phase artifacts:
 
 The following observation IDs from the SDD memory store provide full audit trail for this change:
 
-| Artifact | Topic Key | Status |
-|----------|-----------|--------|
-| Proposal | `sdd/dashboard-obsidian-flux/proposal` | ✅ Recorded (proposal.md) |
-| Spec (Delta: dashboard-shell) | `sdd/dashboard-obsidian-flux/spec` | ✅ Recorded & Merged (spec.md → openspec/specs/dashboard-shell.md) |
-| Design | `sdd/dashboard-obsidian-flux/design` | ✅ Recorded (design.md in archive) |
-| Tasks | `sdd/dashboard-obsidian-flux/tasks` | ✅ Recorded & Complete (35/35 tasks) |
-| Apply Progress | `sdd/dashboard-obsidian-flux/apply-progress` | ✅ Recorded (apply-progress.md in archive) |
-| Verify Report | `sdd/dashboard-obsidian-flux/verify-report` | ✅ Recorded (verify-report.md in archive) |
-| Archive Report | `sdd/dashboard-obsidian-flux/archive-report` | ✅ This file |
+| Artifact                      | Topic Key                                    | Status                                                             |
+| ----------------------------- | -------------------------------------------- | ------------------------------------------------------------------ |
+| Proposal                      | `sdd/dashboard-obsidian-flux/proposal`       | ✅ Recorded (proposal.md)                                          |
+| Spec (Delta: dashboard-shell) | `sdd/dashboard-obsidian-flux/spec`           | ✅ Recorded & Merged (spec.md → openspec/specs/dashboard-shell.md) |
+| Design                        | `sdd/dashboard-obsidian-flux/design`         | ✅ Recorded (design.md in archive)                                 |
+| Tasks                         | `sdd/dashboard-obsidian-flux/tasks`          | ✅ Recorded & Complete (35/35 tasks)                               |
+| Apply Progress                | `sdd/dashboard-obsidian-flux/apply-progress` | ✅ Recorded (apply-progress.md in archive)                         |
+| Verify Report                 | `sdd/dashboard-obsidian-flux/verify-report`  | ✅ Recorded (verify-report.md in archive)                          |
+| Archive Report                | `sdd/dashboard-obsidian-flux/archive-report` | ✅ This file                                                       |
 
 All observation IDs are persisted in the Engram persistent memory store and indexed by topic key for future reference.
 
@@ -109,6 +110,7 @@ All self-disclosed deviations from apply-progress.md (top-bar page-title copy, c
 ### Code Changes (Committed to `main`)
 
 **Files Created (14)**:
+
 - `apps/web/src/components/Sidebar.tsx` (mode nav + connection card)
 - `apps/web/src/components/icons.tsx` (9 inline SVG icons)
 - `apps/web/src/components/ChartPanel.tsx` (chart panel wrapper)
@@ -122,6 +124,7 @@ All self-disclosed deviations from apply-progress.md (top-bar page-title copy, c
 - `apps/web/test/helpers/dom-layout.ts` (jsdom stubs for @tanstack/react-virtual)
 
 **Files Modified (13)**:
+
 - `vitest.config.ts` (jsx: 'automatic' + include *.test.tsx)
 - `package.json` (root: @testing-library/react, @testing-library/dom)
 - `apps/web/src/components/FilterBar.tsx` (token surfaces, control preservation)
@@ -137,6 +140,7 @@ All self-disclosed deviations from apply-progress.md (top-bar page-title copy, c
 - `apps/web/src/index.css` (`@theme static`, CHART_CHROME tokens already in level-styles.ts)
 
 **Test Coverage**:
+
 - 14 new unit/component tests (view-mode, level-styles, Sidebar, LogConsole)
 - 24/24 passing in apps/web scope
 - 0 regressions in full test suite (71 passed / 21 skipped in root suite; 21 skipped due to pre-existing Docker infra gate, not this change)
@@ -148,6 +152,7 @@ All self-disclosed deviations from apply-progress.md (top-bar page-title copy, c
 
 **Total Review Budget**: 800 lines (session estimate)  
 **Actual Authored Lines** (per git diff --numstat):
+
 - PR1 (Shell + Tokens): ~527 lines
 - PR2 (Stream Surfaces): ~270 lines
 - PR3 (Chart + Side Panels): ~154 lines
@@ -158,6 +163,7 @@ All self-disclosed deviations from apply-progress.md (top-bar page-title copy, c
 ## No Rollback Needed
 
 All three slices remain on `main` and are complete:
+
 - No open branches requiring cleanup
 - No PRs requiring closure
 - No failed commits to revert

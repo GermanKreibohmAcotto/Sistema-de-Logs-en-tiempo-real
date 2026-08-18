@@ -8,7 +8,10 @@ import { recordRateCounters } from '../ingest/rate-counters.js';
 import { evaluateIngestedBatch } from '../alerts/engine.js';
 import { requireApiKey } from '../plugins/auth.js';
 
-function toEventAndRow(input: LogEventInput, apiKeyId: number | null): { event: LogEvent; row: BufferedRow } {
+function toEventAndRow(
+  input: LogEventInput,
+  apiKeyId: number | null,
+): { event: LogEvent; row: BufferedRow } {
   const ts = input.timestamp ?? new Date().toISOString();
   const event: LogEvent = {
     id: randomUUID(),

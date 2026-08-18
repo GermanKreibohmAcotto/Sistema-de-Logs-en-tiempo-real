@@ -52,7 +52,9 @@ export const statsRoutes: FastifyPluginAsync = async (fastify) => {
       bucket.counts[row.level as keyof StatsBucket['counts']] = row.count;
     }
 
-    const buckets = [...byBucket.values()].sort((a, b) => a.bucketStart.localeCompare(b.bucketStart));
+    const buckets = [...byBucket.values()].sort((a, b) =>
+      a.bucketStart.localeCompare(b.bucketStart),
+    );
     return { buckets };
   });
 };

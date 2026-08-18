@@ -38,7 +38,9 @@ describe.skipIf(!available)('WS gateway live filtering (needs Postgres/Redis rea
     const received: ServerMessage[] = [];
     ws.on('message', (raw: Buffer) => received.push(JSON.parse(raw.toString()) as ServerMessage));
 
-    ws.send(JSON.stringify({ type: 'subscribe', filters: { levels: ['ERROR'], services: [service] } }));
+    ws.send(
+      JSON.stringify({ type: 'subscribe', filters: { levels: ['ERROR'], services: [service] } }),
+    );
     await sleep(50); // let the `subscribed` ack land
 
     const res = await app.inject({
@@ -93,7 +95,9 @@ describe.skipIf(!available)('WS gateway live filtering (needs Postgres/Redis rea
     ws.send(JSON.stringify({ type: 'resume' }));
     await sleep(100);
 
-    const pausedAck = received.find((m): m is Extract<ServerMessage, { type: 'paused' }> => m.type === 'paused');
+    const pausedAck = received.find(
+      (m): m is Extract<ServerMessage, { type: 'paused' }> => m.type === 'paused',
+    );
     expect(pausedAck?.missed).toBe(2);
 
     ws.close();

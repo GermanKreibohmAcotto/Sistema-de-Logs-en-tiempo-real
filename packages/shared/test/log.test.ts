@@ -21,7 +21,11 @@ describe('logEventInputSchema', () => {
   });
 
   it('rejects an empty message', () => {
-    const result = logEventInputSchema.safeParse({ level: 'INFO', service: 'checkout', message: '' });
+    const result = logEventInputSchema.safeParse({
+      level: 'INFO',
+      service: 'checkout',
+      message: '',
+    });
     expect(result.success).toBe(false);
   });
 

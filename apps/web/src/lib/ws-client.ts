@@ -1,4 +1,11 @@
-import { serverMessageSchema, type Alert, type ClientMessage, type LogEvent, type LogQuery, type StatsBucket } from '@logs/shared';
+import {
+  serverMessageSchema,
+  type Alert,
+  type ClientMessage,
+  type LogEvent,
+  type LogQuery,
+  type StatsBucket,
+} from '@logs/shared';
 import { getDashboardToken } from './dashboard-token';
 
 export type ConnectionStatus = 'connecting' | 'connected' | 'reconnecting' | 'disconnected';

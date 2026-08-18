@@ -8,7 +8,8 @@ import { LogStore } from '../src/lib/log-store.js';
 if (typeof globalThis.requestAnimationFrame === 'undefined') {
   globalThis.requestAnimationFrame = ((cb: FrameRequestCallback) =>
     setTimeout(() => cb(performance.now()), 0)) as typeof requestAnimationFrame;
-  globalThis.cancelAnimationFrame = ((id: number) => clearTimeout(id)) as typeof cancelAnimationFrame;
+  globalThis.cancelAnimationFrame = ((id: number) =>
+    clearTimeout(id)) as typeof cancelAnimationFrame;
 }
 
 function makeEvent(id: string): LogEvent {
