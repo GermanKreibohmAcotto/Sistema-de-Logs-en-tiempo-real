@@ -1,4 +1,12 @@
-import type { Alert, AlertRule, AlertRuleInput, LogEvent, LogLevel, StatsBucket } from '@logs/shared';
+import type {
+  Alert,
+  AlertRule,
+  AlertRuleInput,
+  ExportFormat,
+  LogEvent,
+  LogLevel,
+  StatsBucket,
+} from '@logs/shared';
 import { clearDashboardToken, getDashboardToken } from './dashboard-token';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:4000';
@@ -89,9 +97,24 @@ export async function deleteAlertRule(id: string): Promise<void> {
   await request(`/v1/alerts/rules/${id}`, { method: 'DELETE' });
 }
 
-/** Not fetched via `request` - this is meant to be assigned to an <a href>/window.location so the browser handles the download/streaming response itself. */
-export function exportUrl(params: LogFilterParams & { format: 'csv' | 'json' | 'ndjson' }): string {
-  return `${BASE_URL}/v1/logs/export${buildQueryString(params)}`;
+/**
+ * Absolute URL for the download navigation. BASE_URL is "" in production
+ * (nginx serves same-origin, see apps/web/Dockerfile) and `new URL()` throws
+ * on a relative string without a base - passing an absolute base here makes
+ * this work the same in dev and in production. `base` is overridable for
+ * testing without touching import.meta.env.
+ *
+ * Not fetched via `request` - this is meant to be assigned to
+ * window.location so the browser handles the download/streaming response
+ * itself.
+ */
+export function exportDownloadUrl(
+  params: LogFilterParams & { format: ExportFormat },
+  ticket: string,
+  base = BASE_URL,
+): string {
+  const path = `${base}/v1/logs/export${buildQueryString({ ...params, ticket })}`;
+  return new URL(path, window.location.origin).toString();
 }
 
 /** Mints a one-time export ticket over a real fetch() (header auth still works) for the navigation-only download to carry instead. */
