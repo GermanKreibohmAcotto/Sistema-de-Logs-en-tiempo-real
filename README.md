@@ -2,6 +2,7 @@
 
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)
+[![CI](https://github.com/GermanKreibohmAcotto/Sistema-de-Monitoreo-y-Gesti-n-de-Logs-en-Tiempo-Real/actions/workflows/ci.yml/badge.svg)](https://github.com/GermanKreibohmAcotto/Sistema-de-Monitoreo-y-Gesti-n-de-Logs-en-Tiempo-Real/actions/workflows/ci.yml)
 
 Plataforma open source, autohospedable, para centralizar e ingestar los logs
 de tus servicios y verlos en vivo en un dashboard web: streaming en tiempo
@@ -20,8 +21,8 @@ Para levantar tu propia plataforma de logs sin depender de un SaaS: un
 Requiere Docker.
 
 ```bash
-git clone <url-de-este-repo>
-cd sistema-de-monitoreo-y-gestion-de-logs-en-tiempo-real
+git clone https://github.com/GermanKreibohmAcotto/Sistema-de-Monitoreo-y-Gesti-n-de-Logs-en-Tiempo-Real.git
+cd Sistema-de-Monitoreo-y-Gesti-n-de-Logs-en-Tiempo-Real
 docker compose up -d --build
 ```
 
@@ -121,6 +122,13 @@ todos tus logs.
 - [docs/API.md](./docs/API.md) — referencia de endpoints HTTP y protocolo WebSocket.
 - [docs/ENVIAR-LOGS.md](./docs/ENVIAR-LOGS.md) — integrar tu app como productor.
 - [docs/DESPLIEGUE.md](./docs/DESPLIEGUE.md) — llevarlo a un servidor real.
+
+## Contribuir
+
+Los aportes son bienvenidos. Mirá [CONTRIBUTING.md](./CONTRIBUTING.md) para
+levantar el entorno y las convenciones del proyecto, o los issues con la
+etiqueta [`good first issue`](https://github.com/GermanKreibohmAcotto/Sistema-de-Monitoreo-y-Gesti-n-de-Logs-en-Tiempo-Real/labels/good%20first%20issue)
+si buscás por dónde arrancar.
 
 ## Licencia
 
